@@ -1,0 +1,490 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+    background: #f5f7fa;
+    color: #2d3748;
+    padding: 12px;
+    max-width: 600px;
+    margin: 0 auto;
+    padding-bottom: 100px;
+}
+
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 0;
+    border-bottom: 2px solid #e2e8f0;
+    margin-bottom: 16px;
+}
+
+header h1 {
+    font-size: 24px;
+    color: #2d3748;
+    font-weight: 700;
+}
+
+header h1 span {
+    color: #ed8936;
+}
+
+#current-date {
+    font-size: 14px;
+    color: #718096;
+    font-weight: 500;
+}
+
+.balance-card {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 16px;
+    padding: 24px 20px;
+    color: white;
+    margin-bottom: 16px;
+    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+}
+
+.balance-card h2 {
+    font-size: 15px;
+    opacity: 0.9;
+    font-weight: 400;
+    margin-bottom: 6px;
+}
+
+#balance-amount {
+    font-size: 36px;
+    font-weight: 700;
+}
+
+#balance-amount.positive {
+    color: #68d391;
+}
+
+#balance-amount.negative {
+    color: #fc8181;
+}
+
+#chart-section {
+    background: white;
+    border-radius: 16px;
+    padding: 20px 16px 12px 16px;
+    margin-bottom: 16px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+}
+
+.chart-container {
+    position: relative;
+    height: 300px;
+    width: 100%;
+    max-width: 100%;
+    margin: 0 auto;
+}
+
+.chart-container canvas {
+    display: block !important;
+    margin: 0 auto !important;
+}
+
+#month-total {
+    display: none;
+}
+
+#graph-section {
+    background: white;
+    border-radius: 16px;
+    padding: 16px;
+    margin-bottom: 16px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+}
+
+#graph-section canvas {
+    width: 100% !important;
+    height: 180px !important;
+}
+
+#recent-section {
+    background: white;
+    border-radius: 16px;
+    padding: 16px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+}
+
+#recent-section h3 {
+    font-size: 18px;
+    font-weight: 700;
+    margin-bottom: 14px;
+    color: #2d3748;
+}
+
+.recent-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 0;
+    border-bottom: 1px solid #f0f4f8;
+    cursor: pointer;
+    transition: background 0.2s;
+    border-radius: 8px;
+    padding-left: 8px;
+    padding-right: 8px;
+}
+
+.recent-item:hover {
+    background: #f7fafc;
+}
+
+.recent-item:last-child {
+    border-bottom: none;
+}
+
+.recent-item .info {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex: 1;
+    min-width: 0;
+}
+
+.recent-item .tag {
+    width: 12px !important;
+    height: 12px !important;
+    border-radius: 50% !important;
+    flex-shrink: 0 !important;
+    min-width: 12px !important;
+    min-height: 12px !important;
+    border: 1px solid rgba(0,0,0,0.1);
+    display: inline-block !important;
+}
+
+.recent-item .details {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-width: 0;
+}
+
+.recent-item .category-name {
+    font-size: 16px;
+    font-weight: 700;
+    color: #2d3748;
+}
+
+.recent-item .description {
+    font-size: 13px;
+    color: #a0aec0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.recent-item .amount {
+    font-weight: 700;
+    font-size: 18px;
+    white-space: nowrap;
+}
+
+.recent-item .amount.income {
+    color: #48bb78;
+}
+
+.recent-item .amount.expense {
+    color: #fc8181;
+}
+
+.recent-item .date {
+    font-size: 12px;
+    color: #a0aec0;
+    text-align: right;
+    white-space: nowrap;
+}
+
+.recent-item .right {
+    text-align: right;
+    flex-shrink: 0;
+    margin-left: 10px;
+}
+
+.fab {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: none;
+    font-size: 32px;
+    cursor: pointer;
+    box-shadow: 0 4px 20px rgba(102, 126, 234, 0.5);
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.fab:active {
+    transform: scale(0.92);
+}
+
+#modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0,0,0,0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2000;
+    padding: 20px;
+}
+
+#modal-overlay.hidden {
+    display: none;
+}
+
+#modal {
+    background: white;
+    border-radius: 20px;
+    padding: 24px 20px;
+    width: 100%;
+    max-width: 400px;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+}
+
+#modal h2 {
+    margin-bottom: 18px;
+    font-size: 20px;
+    font-weight: 700;
+    color: #2d3748;
+}
+
+.form-group {
+    margin-bottom: 16px;
+}
+
+.form-group label {
+    display: block;
+    font-size: 13px;
+    font-weight: 600;
+    margin-bottom: 4px;
+    color: #4a5568;
+}
+
+.form-group input,
+.form-group select {
+    width: 100%;
+    padding: 10px 12px;
+    border: 2px solid #e2e8f0;
+    border-radius: 10px;
+    font-size: 15px;
+    background: #f7fafc;
+    color: #2d3748;
+}
+
+.form-group input:focus,
+.form-group select:focus {
+    outline: none;
+    border-color: #667eea;
+    background: white;
+}
+
+#modal button[type="submit"] {
+    width: 100%;
+    padding: 12px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: none;
+    border-radius: 10px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    margin-top: 6px;
+}
+
+#modal button[type="submit"]:active {
+    opacity: 0.8;
+}
+
+#close-modal {
+    width: 100%;
+    padding: 12px;
+    background: #f0f4f8;
+    color: #4a5568;
+    border: none;
+    border-radius: 10px;
+    font-size: 15px;
+    font-weight: 500;
+    cursor: pointer;
+    margin-top: 8px;
+}
+
+#close-modal:hover {
+    background: #e2e8f0;
+}
+
+#delete-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0,0,0,0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 3000;
+    padding: 20px;
+}
+
+#delete-modal-overlay.hidden {
+    display: none;
+}
+
+#delete-modal {
+    background: white;
+    border-radius: 20px;
+    padding: 28px 24px;
+    width: 100%;
+    max-width: 380px;
+    text-align: center;
+}
+
+#delete-modal h2 {
+    font-size: 20px;
+    font-weight: 700;
+    color: #e53e3e;
+    margin-bottom: 12px;
+}
+
+#delete-modal p {
+    font-size: 16px;
+    color: #4a5568;
+    margin-bottom: 20px;
+}
+
+#delete-modal .buttons {
+    display: flex;
+    gap: 12px;
+}
+
+#delete-modal .buttons button {
+    flex: 1;
+    padding: 12px;
+    border: none;
+    border-radius: 10px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+#delete-modal .btn-confirm {
+    background: #e53e3e;
+    color: white;
+}
+
+#delete-modal .btn-confirm:hover {
+    background: #c53030;
+}
+
+#delete-modal .btn-cancel {
+    background: #f0f4f8;
+    color: #4a5568;
+}
+
+#delete-modal .btn-cancel:hover {
+    background: #e2e8f0;
+}
+
+.loading {
+    text-align: center;
+    padding: 20px;
+    color: #a0aec0;
+    font-size: 14px;
+}
+
+#graph-title {
+    font-size: 16px;
+    font-weight: 700;
+    color: #2d3748;
+    margin-bottom: 8px;
+    display: none;
+}
+
+@media (max-width: 480px) {
+    body {
+        padding: 8px;
+        padding-bottom: 80px;
+    }
+    
+    header h1 {
+        font-size: 20px;
+    }
+    
+    #current-date {
+        font-size: 12px;
+    }
+    
+    .balance-card {
+        padding: 18px 16px;
+    }
+    
+    #balance-amount {
+        font-size: 30px;
+    }
+    
+    #chart-section {
+        padding: 12px;
+    }
+    
+    .chart-container {
+        height: 250px;
+    }
+    
+    #graph-section canvas {
+        height: 150px !important;
+    }
+    
+    #recent-section {
+        padding: 12px;
+    }
+    
+    #recent-section h3 {
+        font-size: 16px;
+    }
+    
+    .recent-item {
+        padding: 8px 0;
+    }
+    
+    .recent-item .category-name {
+        font-size: 14px;
+    }
+    
+    .recent-item .amount {
+        font-size: 16px;
+    }
+    
+    .recent-item .tag {
+        width: 10px !important;
+        height: 10px !important;
+        min-width: 10px !important;
+        min-height: 10px !important;
+    }
+    
+    .fab {
+        bottom: 16px;
+        right: 16px;
+        width: 50px;
+        height: 50px;
+        font-size: 28px;
+    }
+}

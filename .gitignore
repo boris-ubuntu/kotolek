@@ -1,0 +1,47 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+venv/
+env/
+ENV/
+.venv
+*.log
+*.pid
+*.seed
+*.pid.lock
+
+# Database
+*.db
+*.sqlite
+*.sqlite3
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Server logs
+server.log
+nohup.out
+
+# Frontend
+node_modules/
+dist/
+build/
+*.min.js
+
+# Backend
+backend/__pycache__/
+backend/app/__pycache__/
+backend/app/routers/__pycache__/
