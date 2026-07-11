@@ -2,6 +2,7 @@ from sqlalchemy.orm import Session
 from sqlalchemy import func, and_, extract
 from datetime import datetime, timedelta
 from . import models, schemas
+from fastapi import HTTPException
 
 def get_categories(db: Session, skip: int = 0, limit: int = 100):
     return db.query(models.Category).offset(skip).limit(limit).all()
@@ -41,6 +42,43 @@ def get_recent_transactions(db: Session, limit: int = 5):
     ).order_by(
         models.Transaction.date.desc()
     ).limit(limit).all()
+    
+    transactions = []
+    for row in results:
+        txn = row[0]
+        transactions.append({
+            "id": txn.id,
+            "amount": txn.amount,
+            "category_id": txn.category_id,
+            "category_name": row.category_name,
+            "category_color": row.category_color,
+            "description": txn.description,
+            "is_income": txn.is_income,
+            "date": txn.date.isoformat(),
+            "created_at": txn.created_at.isoformat()
+        })
+    return transactions
+
+def get_transactions_by_month(db: Session, year: int, month: int):
+    start_date = datetime(year, month, 1)
+    if month == 12:
+        end_date = datetime(year + 1, 1, 1) - timedelta(days=1)
+    else:
+        end_date = datetime(year, month + 1, 1) - timedelta(days=1)
+    
+    results = db.query(
+        models.Transaction,
+        models.Category.name.label('category_name'),
+        models.Category.color.label('category_color')
+    ).join(
+        models.Category,
+        models.Transaction.category_id == models.Category.id
+    ).filter(
+        models.Transaction.date >= start_date,
+        models.Transaction.date <= end_date
+    ).order_by(
+        models.Transaction.date.desc()
+    ).all()
     
     transactions = []
     for row in results:
@@ -153,3 +191,33 @@ def get_daily_balance(db: Session):
         current += timedelta(days=1)
     
     return result
+
+def get_monthly_expenses(db: Session):
+    now = datetime.now()
+    months = []
+    
+    for i in range(6):
+        month_date = now - timedelta(days=30*i)
+        month_start = datetime(month_date.year, month_date.month, 1)
+        if i == 0:
+            month_end = now
+        else:
+            next_month = month_start.replace(day=28) + timedelta(days=4)
+            month_end = next_month - timedelta(days=next_month.day)
+        
+        total = db.query(func.sum(models.Transaction.amount)).filter(
+            and_(
+                models.Transaction.is_income == False,
+                models.Transaction.date >= month_start,
+                models.Transaction.date <= month_end
+            )
+        ).scalar() or 0.0
+        
+        months.append({
+            "month": month_start.strftime("%b"),
+            "year": month_start.year,
+            "total": float(total),
+            "color": "#e53e3e" if total > 75000 else "#48bb78"
+        })
+    
+    return months[::-1]

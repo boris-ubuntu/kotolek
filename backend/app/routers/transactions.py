@@ -21,6 +21,14 @@ def get_recent_transactions(
 ):
     return crud.get_recent_transactions(db, limit)
 
+@router.get("/by-month")
+def get_transactions_by_month(
+    year: int,
+    month: int,
+    db: Session = Depends(get_db)
+):
+    return crud.get_transactions_by_month(db, year, month)
+
 @router.get("/balance")
 def get_balance(db: Session = Depends(get_db)):
     return crud.get_balance(db)
@@ -32,6 +40,10 @@ def get_expenses_by_category(db: Session = Depends(get_db)):
 @router.get("/daily-balance")
 def get_daily_balance(db: Session = Depends(get_db)):
     return crud.get_daily_balance(db)
+
+@router.get("/monthly-expenses")
+def get_monthly_expenses(db: Session = Depends(get_db)):
+    return crud.get_monthly_expenses(db)
 
 @router.delete("/{transaction_id}")
 def delete_transaction(
