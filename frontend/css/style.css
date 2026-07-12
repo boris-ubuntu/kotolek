@@ -93,6 +93,34 @@ header h1 span {
     display: none;
 }
 
+#histogram-section {
+    background: white;
+    border-radius: 16px;
+    padding: 20px 16px;
+    margin-bottom: 16px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+}
+
+#histogram-section h3 {
+    font-size: 16px;
+    font-weight: 700;
+    color: #2d3748;
+    margin-bottom: 12px;
+}
+
+.histogram-container {
+    position: relative;
+    height: 200px;
+    width: 100%;
+    max-width: 100%;
+    margin: 0 auto;
+}
+
+.histogram-container canvas {
+    width: 100% !important;
+    height: 200px !important;
+}
+
 #graph-section {
     background: white;
     border-radius: 16px;
@@ -411,12 +439,35 @@ header h1 span {
     font-size: 14px;
 }
 
-#graph-title {
-    font-size: 16px;
-    font-weight: 700;
+/* Скрываем стандартные маркеры легенды Chart.js */
+.chart-container canvas + div {
+    display: none !important;
+}
+
+/* Стили для кастомной легенды */
+.custom-legend {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 8px 16px;
+    margin-top: 12px;
+    padding: 0 4px;
+}
+
+.custom-legend-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    font-weight: 500;
     color: #2d3748;
-    margin-bottom: 8px;
-    display: none;
+}
+
+.custom-legend-line {
+    width: 20px;
+    height: 3px;
+    border-radius: 2px;
+    flex-shrink: 0;
 }
 
 @media (max-width: 480px) {
@@ -447,6 +498,13 @@ header h1 span {
     
     .chart-container {
         height: 250px;
+    }
+    
+    .histogram-container {
+        height: 170px;
+    }
+    .histogram-container canvas {
+        height: 170px !important;
     }
     
     #graph-section canvas {

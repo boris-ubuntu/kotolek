@@ -78,8 +78,8 @@ class ChartComponent {
                                     weight: '500',
                                 },
                                 usePointStyle: true,
-                                pointStyle: 'circle',
-                                pointStyleWidth: 10,
+                                pointStyle: 'rectRounded',
+                                pointStyleWidth: 20,
                                 generateLabels: function(chart) {
                                     const data = chart.data;
                                     return data.labels.map(function(label, i) {
@@ -87,7 +87,7 @@ class ChartComponent {
                                             text: label + '  ' + formatCurrency(data.datasets[0].data[i]),
                                             fillStyle: data.datasets[0].backgroundColor[i],
                                             strokeStyle: data.datasets[0].backgroundColor[i],
-                                            pointStyle: 'circle',
+                                            pointStyle: 'rectRounded',
                                             index: i,
                                         };
                                     });

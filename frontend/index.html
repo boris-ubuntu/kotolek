@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Котолёк - Семейный бюджет</title>
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg">
     <link rel="stylesheet" href="css/style.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 </head>
@@ -20,11 +21,18 @@
                     <div id="balance-amount">0 ₽</div>
                 </div>
             </section>
+            
             <section id="chart-section">
                 <div class="chart-container">
                     <canvas id="expense-chart"></canvas>
                 </div>
                 <div id="month-total">Загрузка...</div>
+            </section>
+            <section id="histogram-section">
+                <h3>📊 Динамика расходов</h3>
+                <div class="histogram-container">
+                    <canvas id="monthly-histogram"></canvas>
+                </div>
             </section>
             <section id="graph-section">
                 <canvas id="balance-graph"></canvas>
@@ -34,6 +42,12 @@
                 <div id="recent-list">
                     <div class="loading">Загрузка...</div>
                 </div>
+            </section>
+            
+            <section id="actions-section" style="display:flex;gap:10px;margin-top:16px;margin-bottom:20px;flex-wrap:wrap;">
+                <button id="export-btn" style="flex:1;padding:14px;background:#667eea;color:white;border:none;border-radius:12px;font-weight:700;cursor:pointer;font-size:15px;min-width:120px;">📥 Экспорт CSV</button>
+                <label for="import-file" style="flex:1;padding:14px;background:#48bb78;color:white;border:none;border-radius:12px;font-weight:700;cursor:pointer;font-size:15px;text-align:center;min-width:120px;">📤 Импорт CSV</label>
+                <input type="file" id="import-file" accept=".csv" style="display:none;">
             </section>
         </main>
         <button id="add-btn" class="fab" aria-label="Добавить операцию">+</button>
@@ -83,6 +97,7 @@
     <script src="js/api.js"></script>
     <script src="js/components/balance.js"></script>
     <script src="js/components/chart.js"></script>
+    <script src="js/components/histogram.js"></script>
     <script src="js/components/graph.js"></script>
     <script src="js/components/recent.js"></script>
     <script src="js/components/modal.js"></script>

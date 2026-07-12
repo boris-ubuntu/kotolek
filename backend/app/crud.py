@@ -31,6 +31,34 @@ def delete_transaction(db: Session, transaction_id: int):
     db.commit()
     return {"message": "Транзакция удалена"}
 
+def get_all_transactions(db: Session):
+    results = db.query(
+        models.Transaction,
+        models.Category.name.label('category_name'),
+        models.Category.color.label('category_color')
+    ).join(
+        models.Category,
+        models.Transaction.category_id == models.Category.id
+    ).order_by(
+        models.Transaction.date.desc()
+    ).all()
+    
+    transactions = []
+    for row in results:
+        txn = row[0]
+        transactions.append({
+            "id": txn.id,
+            "amount": txn.amount,
+            "category_id": txn.category_id,
+            "category_name": row.category_name,
+            "category_color": row.category_color,
+            "description": txn.description,
+            "is_income": txn.is_income,
+            "date": txn.date.isoformat(),
+            "created_at": txn.created_at.isoformat()
+        })
+    return transactions
+
 def get_recent_transactions(db: Session, limit: int = 5):
     results = db.query(
         models.Transaction,

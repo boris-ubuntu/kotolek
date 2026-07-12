@@ -43,4 +43,10 @@ class API {
     static async getDailyBalance() {
         return this.request('/transactions/daily-balance');
     }
+    static async getMonthlyExpenses() {
+        return this.request('/transactions/monthly-expenses');
+    }
+    static async getTransactionsByMonth(year, month) {
+        return this.request('/transactions/by-month?year=' + year + '&month=' + month);
+    }
 }
