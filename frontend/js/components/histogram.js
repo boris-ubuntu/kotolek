@@ -4,6 +4,7 @@ class HistogramComponent {
         this.chart = null;
         this.data = [];
     }
+
     async update() {
         try {
             this.data = await API.getMonthlyExpenses();
@@ -14,12 +15,16 @@ class HistogramComponent {
             this.clearChart();
         }
     }
+
     render(data) {
         if (!data || data.length === 0) {
             this.clearChart();
             return;
         }
+
         this.data = data;
+        const component = this;
+
         const labels = data.map(function(item) {
             return item.month + ' ' + item.year;
         });
@@ -29,6 +34,7 @@ class HistogramComponent {
         const colors = data.map(function(item) {
             return item.color;
         });
+
         if (this.chart) {
             this.chart.data.labels = labels;
             this.chart.data.datasets[0].data = values;
@@ -52,18 +58,20 @@ class HistogramComponent {
                 options: {
                     responsive: true,
                     maintainAspectRatio: true,
-                    onClick: function(event, elements) {
-                        if (elements && elements.length > 0) {
-                            const index = elements[0].index;
-                            const item = this.data.datasets[0].data[index];
-                            const label = this.data.labels[index];
-                            const parts = label.split(' ');
-                            const month = parts[0];
-                            const year = parseInt(parts[1]);
-                            const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-                            const monthIndex = monthNames.indexOf(month) + 1;
-                            window.location.href = '/month-detail.html?year=' + year + '&month=' + monthIndex;
-                        }
+                    onClick: (event, elements) => {
+                        if (!elements || elements.length === 0) return;
+
+                        const index = elements[0].index;
+                        const item = component.data[index];
+                        if (!item) return;
+
+                        const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+                                            'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+                        const monthIndex = monthNames.indexOf(item.month) + 1;
+                        if (monthIndex === 0) return;
+
+                        window.location.href =
+                            '/month-detail.html?year=' + item.year + '&month=' + monthIndex;
                     },
                     plugins: {
                         legend: {
@@ -115,6 +123,7 @@ class HistogramComponent {
             });
         }
     }
+
     clearChart() {
         if (this.chart) {
             this.chart.destroy();

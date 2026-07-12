@@ -52,14 +52,15 @@ def get_monthly_expenses(db: Session = Depends(get_db)):
 @router.get("/export")
 def export_transactions(db: Session = Depends(get_db)):
     try:
-        transactions = crud.get_all_transactions(db)
+        # Экспортируем всё без ограничения
+        all_transactions = crud.get_all_transactions(db, skip=0, limit=10_000_000)
         
         output = io.StringIO()
         writer = csv.writer(output, delimiter=';')
         
         writer.writerow(['id', 'amount', 'category_id', 'category_name', 'description', 'is_income', 'date', 'created_at'])
         
-        for txn in transactions:
+        for txn in all_transactions:
             writer.writerow([
                 txn['id'],
                 txn['amount'],

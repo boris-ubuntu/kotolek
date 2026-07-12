@@ -1,8 +1,42 @@
 from sqlalchemy.orm import Session
-from sqlalchemy import func, and_, extract
+from sqlalchemy import func, and_
 from datetime import datetime, timedelta
+import calendar
 from . import models, schemas
 from fastapi import HTTPException
+
+
+# ========== Вспомогательные функции ==========
+
+def _build_transaction_response(row):
+    """Преобразует строку результата JOIN-запроса в словарь."""
+    txn = row[0]
+    return {
+        "id": txn.id,
+        "amount": txn.amount,
+        "category_id": txn.category_id,
+        "category_name": row.category_name,
+        "category_color": row.category_color,
+        "description": txn.description,
+        "is_income": txn.is_income,
+        "date": txn.date.isoformat(),
+        "created_at": txn.created_at.isoformat(),
+    }
+
+
+def _get_transactions_query(db: Session):
+    """Базовый JOIN-запрос транзакций с категориями — устраняет дублирование."""
+    return db.query(
+        models.Transaction,
+        models.Category.name.label("category_name"),
+        models.Category.color.label("category_color"),
+    ).join(
+        models.Category,
+        models.Transaction.category_id == models.Category.id,
+    )
+
+
+# ========== Категории ==========
 
 def get_categories(db: Session, skip: int = 0, limit: int = 100):
     return db.query(models.Category).offset(skip).limit(limit).all()
@@ -10,7 +44,20 @@ def get_categories(db: Session, skip: int = 0, limit: int = 100):
 def get_category_by_name(db: Session, name: str):
     return db.query(models.Category).filter(models.Category.name == name).first()
 
+# ========== Транзакции ==========
+
+def _validate_category_exists(db: Session, category_id: int):
+    """Проверяет, что категория существует — предотвращает битые ссылки."""
+    category = db.query(models.Category).filter(models.Category.id == category_id).first()
+    if not category:
+        raise HTTPException(
+            status_code=400,
+            detail=f"Категория с id={category_id} не найдена",
+        )
+
+
 def create_transaction(db: Session, transaction: schemas.TransactionCreate):
+    _validate_category_exists(db, transaction.category_id)
     db_transaction = models.Transaction(
         amount=transaction.amount,
         category_id=transaction.category_id,
@@ -31,123 +78,75 @@ def delete_transaction(db: Session, transaction_id: int):
     db.commit()
     return {"message": "Транзакция удалена"}
 
-def get_all_transactions(db: Session):
-    results = db.query(
-        models.Transaction,
-        models.Category.name.label('category_name'),
-        models.Category.color.label('category_color')
-    ).join(
-        models.Category,
-        models.Transaction.category_id == models.Category.id
-    ).order_by(
-        models.Transaction.date.desc()
-    ).all()
-    
-    transactions = []
-    for row in results:
-        txn = row[0]
-        transactions.append({
-            "id": txn.id,
-            "amount": txn.amount,
-            "category_id": txn.category_id,
-            "category_name": row.category_name,
-            "category_color": row.category_color,
-            "description": txn.description,
-            "is_income": txn.is_income,
-            "date": txn.date.isoformat(),
-            "created_at": txn.created_at.isoformat()
-        })
-    return transactions
+def get_all_transactions(db: Session, skip: int = 0, limit: int = 100):
+    return [
+        _build_transaction_response(r)
+        for r in _get_transactions_query(db)
+        .order_by(models.Transaction.date.desc())
+        .offset(skip)
+        .limit(limit)
+        .all()
+    ]
+
 
 def get_recent_transactions(db: Session, limit: int = 5):
-    results = db.query(
-        models.Transaction,
-        models.Category.name.label('category_name'),
-        models.Category.color.label('category_color')
-    ).join(
-        models.Category,
-        models.Transaction.category_id == models.Category.id
-    ).order_by(
-        models.Transaction.date.desc()
-    ).limit(limit).all()
-    
-    transactions = []
-    for row in results:
-        txn = row[0]
-        transactions.append({
-            "id": txn.id,
-            "amount": txn.amount,
-            "category_id": txn.category_id,
-            "category_name": row.category_name,
-            "category_color": row.category_color,
-            "description": txn.description,
-            "is_income": txn.is_income,
-            "date": txn.date.isoformat(),
-            "created_at": txn.created_at.isoformat()
-        })
-    return transactions
+    return [
+        _build_transaction_response(r)
+        for r in _get_transactions_query(db)
+        .order_by(models.Transaction.date.desc())
+        .limit(limit)
+        .all()
+    ]
+
 
 def get_transactions_by_month(db: Session, year: int, month: int):
     start_date = datetime(year, month, 1)
-    if month == 12:
-        end_date = datetime(year + 1, 1, 1) - timedelta(days=1)
-    else:
-        end_date = datetime(year, month + 1, 1) - timedelta(days=1)
-    
-    results = db.query(
-        models.Transaction,
-        models.Category.name.label('category_name'),
-        models.Category.color.label('category_color')
-    ).join(
-        models.Category,
-        models.Transaction.category_id == models.Category.id
-    ).filter(
-        models.Transaction.date >= start_date,
-        models.Transaction.date <= end_date
-    ).order_by(
-        models.Transaction.date.desc()
-    ).all()
-    
-    transactions = []
-    for row in results:
-        txn = row[0]
-        transactions.append({
-            "id": txn.id,
-            "amount": txn.amount,
-            "category_id": txn.category_id,
-            "category_name": row.category_name,
-            "category_color": row.category_color,
-            "description": txn.description,
-            "is_income": txn.is_income,
-            "date": txn.date.isoformat(),
-            "created_at": txn.created_at.isoformat()
-        })
-    return transactions
+    _, last_day = calendar.monthrange(year, month)
+    end_date = datetime(year, month, last_day, 23, 59, 59)
+
+    return [
+        _build_transaction_response(r)
+        for r in _get_transactions_query(db)
+        .filter(
+            models.Transaction.date >= start_date,
+            models.Transaction.date <= end_date,
+        )
+        .order_by(models.Transaction.date.desc())
+        .all()
+    ]
 
 def get_balance(db: Session):
     now = datetime.now()
     start_date = datetime(now.year, now.month, 1)
     
-    month_income = db.query(func.sum(models.Transaction.amount)).filter(
-        and_(
-            models.Transaction.is_income == True,
-            models.Transaction.date >= start_date
-        )
-    ).scalar() or 0.0
-    
-    month_expenses = db.query(func.sum(models.Transaction.amount)).filter(
-        and_(
-            models.Transaction.is_income == False,
-            models.Transaction.date >= start_date
-        )
-    ).scalar() or 0.0
-    
-    balance = month_income - month_expenses
-    
+    stats = db.query(
+        func.coalesce(
+            func.sum(models.Transaction.amount).filter(
+                and_(
+                    models.Transaction.is_income == True,
+                    models.Transaction.date >= start_date,
+                )
+            ),
+            0.0,
+        ).label("month_income"),
+        func.coalesce(
+            func.sum(models.Transaction.amount).filter(
+                and_(
+                    models.Transaction.is_income == False,
+                    models.Transaction.date >= start_date,
+                )
+            ),
+            0.0,
+        ).label("month_expenses"),
+    ).first()
+
+    month_income = float(stats.month_income)
+    month_expenses = float(stats.month_expenses)
+
     return {
-        "balance": balance,
+        "balance": round(month_income - month_expenses, 2),
         "month_income": month_income,
-        "month_expenses": month_expenses
+        "month_expenses": month_expenses,
     }
 
 def get_expenses_by_category(db: Session):
@@ -221,31 +220,38 @@ def get_daily_balance(db: Session):
     return result
 
 def get_monthly_expenses(db: Session):
+    """Последние 6 месяцев с корректным расчётом (без дрейфа timedelta)."""
     now = datetime.now()
     months = []
-    
-    for i in range(6):
-        month_date = now - timedelta(days=30*i)
-        month_start = datetime(month_date.year, month_date.month, 1)
-        if i == 0:
-            month_end = now
-        else:
-            next_month = month_start.replace(day=28) + timedelta(days=4)
-            month_end = next_month - timedelta(days=next_month.day)
-        
-        total = db.query(func.sum(models.Transaction.amount)).filter(
-            and_(
-                models.Transaction.is_income == False,
-                models.Transaction.date >= month_start,
-                models.Transaction.date <= month_end
+
+    for i in range(5, -1, -1):
+        total_months = now.year * 12 + (now.month - 1) - i
+        year = total_months // 12
+        month = total_months % 12 + 1
+
+        month_start = datetime(year, month, 1)
+        _, last_day = calendar.monthrange(year, month)
+        month_end = datetime(year, month, last_day, 23, 59, 59)
+
+        total = (
+            db.query(func.coalesce(func.sum(models.Transaction.amount), 0.0))
+            .filter(
+                and_(
+                    models.Transaction.is_income == False,
+                    models.Transaction.date >= month_start,
+                    models.Transaction.date <= month_end,
+                )
             )
-        ).scalar() or 0.0
-        
-        months.append({
-            "month": month_start.strftime("%b"),
-            "year": month_start.year,
-            "total": float(total),
-            "color": "#e53e3e" if total > 75000 else "#48bb78"
-        })
-    
-    return months[::-1]
+            .scalar()
+        )
+
+        months.append(
+            {
+                "month": month_start.strftime("%b"),
+                "year": month_start.year,
+                "total": float(total),
+                "color": "#e53e3e" if float(total) > 75000 else "#48bb78",
+            }
+        )
+
+    return months

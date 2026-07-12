@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from typing import List
-from .. import schemas, crud
+from .. import schemas, crud, models
 from ..database import get_db
 
 router = APIRouter(prefix="/api/categories", tags=["categories"])
@@ -25,8 +25,8 @@ def get_category(
     """
     Получить категорию по ID
     """
-    category = db.query(crud.models.Category).filter(
-        crud.models.Category.id == category_id
+    category = db.query(models.Category).filter(
+        models.Category.id == category_id
     ).first()
     if not category:
         raise HTTPException(status_code=404, detail="Категория не найдена")
