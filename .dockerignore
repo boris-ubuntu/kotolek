@@ -1,0 +1,10 @@
+# Исключаем ненужное из контекста сборки
+.git
+.gitignore
+__pycache__
+*.pyc
+backend/__pycache__
+backend/.env
+backend/venv
+README.md
+LICENSE

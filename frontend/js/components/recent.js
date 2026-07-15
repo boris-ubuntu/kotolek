@@ -48,7 +48,7 @@ class RecentComponent {
     }
 }
 
-// Глобальная функция для обработки клика
+// Глобальная функция для обработки клика — открываем окно подтверждения удаления
 window.handleRecentClick = function(id) {
     console.log('Clicked transaction id:', id);
     if (window.deleteModal) {

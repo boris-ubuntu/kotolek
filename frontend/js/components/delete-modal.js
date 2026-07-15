@@ -38,7 +38,6 @@ class DeleteModal {
                 const error = await response.json();
                 throw new Error(error.detail || 'Ошибка удаления');
             }
-            showSuccess('Операция удалена');
             this.close();
             window.dispatchEvent(new Event('transaction-added'));
         } catch (error) {

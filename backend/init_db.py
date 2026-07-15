@@ -11,29 +11,29 @@ logger = logging.getLogger(__name__)
 
 def init_categories(db):
     categories_data = [
-        # Расходы (красный)
-        {"name": "Продукты", "color": "#FF0000", "is_income": False},
-        {"name": "Кафе", "color": "#FF0000", "is_income": False},
-        # Расходы (фиолетовый)
-        {"name": "Топливо", "color": "#8B00FF", "is_income": False},
-        {"name": "Мойка", "color": "#8B00FF", "is_income": False},
-        {"name": "Тех. обслуживание", "color": "#8B00FF", "is_income": False},
-        # Расходы (голубой)
-        {"name": "Товары", "color": "#00BFFF", "is_income": False},
-        {"name": "Дети", "color": "#00BFFF", "is_income": False},
-        {"name": "Одежда", "color": "#00BFFF", "is_income": False},
-        # Расходы (зеленый)
-        {"name": "Спорт", "color": "#00FF00", "is_income": False},
-        {"name": "Культура", "color": "#00FF00", "is_income": False},
-        {"name": "События", "color": "#00FF00", "is_income": False},
-        # Расходы (оранжевый)
-        {"name": "Интернет", "color": "#FF8C00", "is_income": False},
-        {"name": "Штрафы", "color": "#FF8C00", "is_income": False},
-        {"name": "ЖКХ", "color": "#FF8C00", "is_income": False},
-        {"name": "Общественный транспорт", "color": "#FF8C00", "is_income": False},
-        {"name": "Прочее", "color": "#FF8C00", "is_income": False},
-        # Доход (желтый)
-        {"name": "Доход", "color": "#FFD700", "is_income": True},
+        # Еда (#5390d9)
+        {"name": "Продукты", "color": "#5390d9", "is_income": False},
+        {"name": "Кафе", "color": "#5390d9", "is_income": False},
+        # Авто (#56cfe1)
+        {"name": "Топливо", "color": "#56cfe1", "is_income": False},
+        {"name": "Мойка", "color": "#56cfe1", "is_income": False},
+        {"name": "Тех. обслуживание", "color": "#56cfe1", "is_income": False},
+        # Товары (#5e60ce)
+        {"name": "Товары", "color": "#5e60ce", "is_income": False},
+        {"name": "Дети", "color": "#5e60ce", "is_income": False},
+        {"name": "Одежда", "color": "#5e60ce", "is_income": False},
+        # Мероприятия (#6930c3)
+        {"name": "Спорт", "color": "#6930c3", "is_income": False},
+        {"name": "Культура", "color": "#6930c3", "is_income": False},
+        {"name": "События", "color": "#6930c3", "is_income": False},
+        # Платежи (#2acbcb)
+        {"name": "Интернет", "color": "#2acbcb", "is_income": False},
+        {"name": "Штрафы", "color": "#2acbcb", "is_income": False},
+        {"name": "ЖКХ", "color": "#2acbcb", "is_income": False},
+        {"name": "Общественный транспорт", "color": "#2acbcb", "is_income": False},
+        {"name": "Прочее", "color": "#2acbcb", "is_income": False},
+        # Доход (#4ea8de)
+        {"name": "Доход", "color": "#4ea8de", "is_income": True},
     ]
     
     for cat_data in categories_data:

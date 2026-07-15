@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Котолёк - Семейный бюджет</title>
     <link rel="icon" type="image/svg+xml" href="/favicon.svg">
-    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/style.css?v=5">
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 </head>
 <body>
@@ -17,8 +17,14 @@
         <main>
             <section id="balance-section">
                 <div class="balance-card">
-                    <h2>💰 Семейный счёт</h2>
+                    <h2>Семейный счёт</h2>
                     <div id="balance-amount">0 ₽</div>
+                    <div id="month-income" class="month-income"></div>
+                </div>
+                <div class="balance-card top-expense-card" id="top-expense-card">
+                    <h2>Топ расход за месяц</h2>
+                    <div id="top-expense-amount">0 ₽</div>
+                    <div id="expense-trend" class="expense-trend"></div>
                 </div>
             </section>
             
@@ -29,24 +35,27 @@
                 <div id="month-total">Загрузка...</div>
             </section>
             <section id="histogram-section">
-                <h3>📊 Динамика расходов</h3>
+                <h3>Динамика расходов</h3>
                 <div class="histogram-container">
                     <canvas id="monthly-histogram"></canvas>
                 </div>
             </section>
             <section id="graph-section">
-                <canvas id="balance-graph"></canvas>
+                <h3>Баланс</h3>
+                <div class="graph-container">
+                    <canvas id="balance-graph"></canvas>
+                </div>
             </section>
             <section id="recent-section">
-                <h3>📋 Последние операции</h3>
+                <h3>Последние операции</h3>
                 <div id="recent-list">
                     <div class="loading">Загрузка...</div>
                 </div>
             </section>
             
             <section id="actions-section" style="display:flex;gap:10px;margin-top:16px;margin-bottom:20px;flex-wrap:wrap;">
-                <button id="export-btn" style="flex:1;padding:14px;background:#667eea;color:white;border:none;border-radius:12px;font-weight:700;cursor:pointer;font-size:15px;min-width:120px;">📥 Экспорт CSV</button>
-                <label for="import-file" style="flex:1;padding:14px;background:#48bb78;color:white;border:none;border-radius:12px;font-weight:700;cursor:pointer;font-size:15px;text-align:center;min-width:120px;">📤 Импорт CSV</label>
+                <button id="export-btn" class="action-btn export-btn">Экспорт CSV</button>
+                <label for="import-file" class="action-btn import-btn">Импорт CSV</label>
                 <input type="file" id="import-file" accept=".csv" style="display:none;">
             </section>
         </main>
@@ -55,7 +64,7 @@
     
     <div id="modal-overlay" class="hidden">
         <div id="modal">
-            <h2>➕ Добавить операцию</h2>
+            <h2>➕ Добавить</h2>
             <form id="transaction-form" autocomplete="off">
                 <div class="form-group">
                     <label for="amount">Сумма (₽)</label>
@@ -92,16 +101,24 @@
             </div>
         </div>
     </div>
+
+    <div id="info-modal-overlay" class="hidden">
+        <div id="info-modal">
+            <h2 id="info-modal-title"></h2>
+            <div id="info-modal-body"></div>
+            <button class="btn-cancel" id="info-modal-close">Закрыть</button>
+        </div>
+    </div>
     
-    <script src="js/utils.js"></script>
-    <script src="js/api.js"></script>
-    <script src="js/components/balance.js"></script>
-    <script src="js/components/chart.js"></script>
-    <script src="js/components/histogram.js"></script>
-    <script src="js/components/graph.js"></script>
-    <script src="js/components/recent.js"></script>
-    <script src="js/components/modal.js"></script>
-    <script src="js/components/delete-modal.js"></script>
-    <script src="js/app.js"></script>
+    <script src="js/utils.js?v=5"></script>
+    <script src="js/api.js?v=5"></script>
+    <script src="js/components/balance.js?v=5"></script>
+    <script src="js/components/chart.js?v=5"></script>
+    <script src="js/components/histogram.js?v=5"></script>
+    <script src="js/components/graph.js?v=5"></script>
+    <script src="js/components/recent.js?v=5"></script>
+    <script src="js/components/modal.js?v=5"></script>
+    <script src="js/components/delete-modal.js?v=5"></script>
+    <script src="js/app.js?v=5"></script>
 </body>
 </html>

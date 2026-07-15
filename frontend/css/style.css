@@ -1,371 +1,112 @@
-* {
+*
+{
     margin: 0;
     padding: 0;
     box-sizing: border-box;
 }
 
-body {
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
-    background: #f5f7fa;
-    color: #2d3748;
+body
+{
+    font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, Oxygen, Ubuntu, sans-serif;
+    background: #282832;
+    color: #e2e8f0;
     padding: 12px;
     max-width: 600px;
     margin: 0 auto;
     padding-bottom: 100px;
 }
 
-header {
+header
+{
     display: flex;
     justify-content: space-between;
     align-items: center;
     padding: 12px 0;
-    border-bottom: 2px solid #e2e8f0;
+    border-bottom: 2px solid #3a3a47;
     margin-bottom: 16px;
 }
 
-header h1 {
+header h1
+{
     font-size: 24px;
-    color: #2d3748;
+    color: #e2e8f0;
     font-weight: 700;
+    font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, Oxygen, Ubuntu, sans-serif;
 }
 
-header h1 span {
-    color: #ed8936;
+header h1 span
+{
+    color: #00aff5;
 }
 
-#current-date {
+#current-date
+{
     font-size: 14px;
-    color: #718096;
+    color: #a0aec0;
     font-weight: 500;
+    font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, Oxygen, Ubuntu, sans-serif;
 }
 
-.balance-card {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+.balance-card
+{
+    background: #32323e;
     border-radius: 16px;
     padding: 24px 20px;
-    color: white;
+    color: #e2e8f0;
     margin-bottom: 16px;
-    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
 }
 
-.balance-card h2 {
+.balance-card h2
+{
     font-size: 15px;
-    opacity: 0.9;
-    font-weight: 400;
+    opacity: 1;
+    font-weight: 600;
     margin-bottom: 6px;
+    color: #ffffff;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.55);
+    font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, Oxygen, Ubuntu, sans-serif;
 }
 
-#balance-amount {
+#balance-amount
+{
     font-size: 36px;
     font-weight: 700;
+    font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, Oxygen, Ubuntu, sans-serif;
 }
 
-#balance-amount.positive {
-    color: #68d391;
+#balance-amount.positive
+{
+    color: #5cd59b;
 }
 
-#balance-amount.negative {
-    color: #fc8181;
+#balance-amount.negative
+{
+    color: #f27362;
 }
 
-#chart-section {
-    background: white;
-    border-radius: 16px;
-    padding: 20px 16px 12px 16px;
-    margin-bottom: 16px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
-}
-
-.chart-container {
-    position: relative;
-    height: 300px;
-    width: 100%;
-    max-width: 100%;
-    margin: 0 auto;
-}
-
-.chart-container canvas {
-    display: block !important;
-    margin: 0 auto !important;
-}
-
-#month-total {
-    display: none;
-}
-
-#histogram-section {
-    background: white;
-    border-radius: 16px;
-    padding: 20px 16px;
-    margin-bottom: 16px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
-}
-
-#histogram-section h3 {
-    font-size: 16px;
-    font-weight: 700;
-    color: #2d3748;
-    margin-bottom: 12px;
-}
-
-.histogram-container {
-    position: relative;
-    height: 200px;
-    width: 100%;
-    max-width: 100%;
-    margin: 0 auto;
-}
-
-.histogram-container canvas {
-    width: 100% !important;
-    height: 200px !important;
-}
-
-#graph-section {
-    background: white;
-    border-radius: 16px;
-    padding: 16px;
-    margin-bottom: 16px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
-}
-
-#graph-section canvas {
-    width: 100% !important;
-    height: 180px !important;
-}
-
-#recent-section {
-    background: white;
-    border-radius: 16px;
-    padding: 16px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
-}
-
-#recent-section h3 {
-    font-size: 18px;
-    font-weight: 700;
-    margin-bottom: 14px;
-    color: #2d3748;
-}
-
-.recent-item {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 10px 0;
-    border-bottom: 1px solid #f0f4f8;
-    cursor: pointer;
-    transition: background 0.2s;
-    border-radius: 8px;
-    padding-left: 8px;
-    padding-right: 8px;
-}
-
-.recent-item:hover {
-    background: #f7fafc;
-}
-
-.recent-item:last-child {
-    border-bottom: none;
-}
-
-.recent-item .info {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    flex: 1;
-    min-width: 0;
-}
-
-.recent-item .tag {
-    width: 12px !important;
-    height: 12px !important;
-    border-radius: 50% !important;
-    flex-shrink: 0 !important;
-    min-width: 12px !important;
-    min-height: 12px !important;
-    border: 1px solid rgba(0,0,0,0.1);
-    display: inline-block !important;
-}
-
-.recent-item .details {
-    display: flex;
-    flex-direction: column;
-    flex: 1;
-    min-width: 0;
-}
-
-.recent-item .category-name {
-    font-size: 16px;
-    font-weight: 700;
-    color: #2d3748;
-}
-
-.recent-item .description {
-    font-size: 13px;
-    color: #a0aec0;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
-
-.recent-item .amount {
-    font-weight: 700;
-    font-size: 18px;
-    white-space: nowrap;
-}
-
-.recent-item .amount.income {
-    color: #48bb78;
-}
-
-.recent-item .amount.expense {
-    color: #fc8181;
-}
-
-.recent-item .date {
-    font-size: 12px;
-    color: #a0aec0;
-    text-align: right;
-    white-space: nowrap;
-}
-
-.recent-item .right {
-    text-align: right;
-    flex-shrink: 0;
-    margin-left: 10px;
-}
-
-.fab {
-    position: fixed;
-    bottom: 24px;
-    right: 24px;
-    width: 56px;
-    height: 56px;
-    border-radius: 50%;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
-    border: none;
-    font-size: 32px;
-    cursor: pointer;
-    box-shadow: 0 4px 20px rgba(102, 126, 234, 0.5);
-    z-index: 1000;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.fab:active {
-    transform: scale(0.92);
-}
-
-#modal-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: rgba(0,0,0,0.5);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 2000;
-    padding: 20px;
-}
-
-#modal-overlay.hidden {
-    display: none;
-}
-
-#modal {
-    background: white;
-    border-radius: 20px;
-    padding: 24px 20px;
-    width: 100%;
-    max-width: 400px;
-    max-height: 90vh;
-    overflow-y: auto;
-    box-shadow: 0 20px 60px rgba(0,0,0,0.2);
-}
-
-#modal h2 {
-    margin-bottom: 18px;
-    font-size: 20px;
-    font-weight: 700;
-    color: #2d3748;
-}
-
-.form-group {
-    margin-bottom: 16px;
-}
-
-.form-group label {
-    display: block;
-    font-size: 13px;
-    font-weight: 600;
-    margin-bottom: 4px;
-    color: #4a5568;
-}
-
-.form-group input,
-.form-group select {
-    width: 100%;
-    padding: 10px 12px;
-    border: 2px solid #e2e8f0;
-    border-radius: 10px;
-    font-size: 15px;
-    background: #f7fafc;
-    color: #2d3748;
-}
-
-.form-group input:focus,
-.form-group select:focus {
-    outline: none;
-    border-color: #667eea;
-    background: white;
-}
-
-#modal button[type="submit"] {
-    width: 100%;
-    padding: 12px;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
-    border: none;
-    border-radius: 10px;
-    font-size: 16px;
-    font-weight: 600;
-    cursor: pointer;
-    margin-top: 6px;
-}
-
-#modal button[type="submit"]:active {
-    opacity: 0.8;
-}
-
-#close-modal {
-    width: 100%;
-    padding: 12px;
-    background: #f0f4f8;
-    color: #4a5568;
-    border: none;
-    border-radius: 10px;
-    font-size: 15px;
-    font-weight: 500;
-    cursor: pointer;
+.month-income
+{
     margin-top: 8px;
+    font-size: 13px;
+    font-weight: 500;
+    color: #5cd59b;
+    font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, Oxygen, Ubuntu, sans-serif;
 }
 
-#close-modal:hover {
-    background: #e2e8f0;
+.top-expense-card
+{
+    cursor: pointer;
 }
 
-#delete-modal-overlay {
+#info-modal-overlay
+{
     position: fixed;
     top: 0;
     left: 0;
     right: 0;
     bottom: 0;
-    background: rgba(0,0,0,0.5);
+    background: rgba(0, 0, 0, 0.6);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -373,38 +114,584 @@ header h1 span {
     padding: 20px;
 }
 
-#delete-modal-overlay.hidden {
+#info-modal-overlay.hidden
+{
     display: none;
 }
 
-#delete-modal {
-    background: white;
+#info-modal
+{
+    background: #32323e;
     border-radius: 20px;
     padding: 28px 24px;
     width: 100%;
     max-width: 380px;
     text-align: center;
+    font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, Oxygen, Ubuntu, sans-serif;
 }
 
-#delete-modal h2 {
+#info-modal h2
+{
     font-size: 20px;
     font-weight: 700;
-    color: #e53e3e;
+    color: #e2e8f0;
+    margin-bottom: 16px;
+}
+
+#info-modal-body
+{
+    margin-bottom: 20px;
+    text-align: left;
+}
+
+#info-modal .btn-cancel
+{
+    width: 100%;
+    padding: 12px;
+    background: #3a3a47;
+    color: #e2e8f0;
+    border: none;
+    border-radius: 10px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, Oxygen, Ubuntu, sans-serif;
+}
+
+#info-modal .btn-cancel:hover
+{
+    background: #454552;
+}
+
+#balance-section
+{
+    display: flex;
+    gap: 12px;
+    margin-bottom: 16px;
+}
+
+.balance-card
+{
+    flex: 1;
+    background: #32323e;
+    border-radius: 16px;
+    padding: 24px 20px;
+    color: #e2e8f0;
+    margin-bottom: 0;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+}
+
+.top-expense-card
+{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+#top-expense-amount
+{
+    font-size: 36px;
+    font-weight: 700;
+    font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, Oxygen, Ubuntu, sans-serif;
+    color: #f27362;
+}
+
+.expense-trend
+{
+    margin-top: 8px;
+    font-size: 13px;
+    font-weight: 600;
+    font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, Oxygen, Ubuntu, sans-serif;
+}
+
+.trend-down-good
+{
+    color: #5cd59b;
+}
+
+.trend-up-bad
+{
+    color: #f27362;
+}
+
+#actions-section
+{
+    display: flex;
+    gap: 12px;
+    margin-top: 16px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+}
+
+.action-btn
+{
+    flex: 1;
+    padding: 14px;
+    border: none;
+    border-radius: 16px;
+    font-weight: 700;
+    cursor: pointer;
+    font-size: 15px;
+    min-width: 120px;
+    text-align: center;
+    color: #e2e8f0;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+    font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, Oxygen, Ubuntu, sans-serif;
+}
+
+.export-btn
+{
+    background: #32323e;
+}
+
+.import-btn
+{
+    background: #32323e;
+}
+
+.action-btn:hover
+{
+    filter: brightness(1.12);
+}
+
+.action-btn:active
+{
+    filter: brightness(0.95);
+}
+
+#chart-section
+{
+    background: #32323e;
+    border-radius: 16px;
+    padding: 20px 16px 12px 16px;
+    margin-bottom: 16px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+}
+
+.chart-container
+{
+    position: relative;
+    height: 360px;
+    width: 100%;
+    max-width: 100%;
+    margin: 0 auto;
+}
+
+.chart-container canvas
+{
+    display: block !important;
+    margin: 0 auto !important;
+}
+
+#month-total
+{
+    display: none;
+}
+
+#histogram-section
+{
+    background: #32323e;
+    border-radius: 16px;
+    padding: 20px 16px;
+    margin-bottom: 16px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+}
+
+#histogram-section h3
+{
+    font-size: 16px;
+    font-weight: 700;
+    color: #ffffff;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.55);
+    margin-bottom: 12px;
+    font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, Oxygen, Ubuntu, sans-serif;
+}
+
+.histogram-container
+{
+    position: relative;
+    height: 240px;
+    width: 100%;
+    max-width: 100%;
+    margin: 0;
+    padding: 0;
+}
+
+.histogram-container canvas
+{
+    display: block !important;
+    width: 100% !important;
+    margin: 0 !important;
+}
+
+#graph-section
+{
+    background: #32323e;
+    border-radius: 16px;
+    padding: 20px 16px;
+    margin-bottom: 16px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+}
+
+#graph-section h3
+{
+    font-size: 16px;
+    font-weight: 700;
+    color: #ffffff;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.55);
+    margin-bottom: 12px;
+    font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, Oxygen, Ubuntu, sans-serif;
+}
+
+.graph-container
+{
+    position: relative;
+    height: 240px;
+    width: 100%;
+    max-width: 100%;
+    margin: 0;
+    padding: 0;
+}
+
+.graph-container canvas
+{
+    display: block !important;
+    width: 100% !important;
+    margin: 0 !important;
+}
+
+#recent-section
+{
+    background: #32323e;
+    border-radius: 16px;
+    padding: 16px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+}
+
+#recent-section h3
+{
+    font-size: 18px;
+    font-weight: 700;
+    margin-bottom: 14px;
+    color: #ffffff;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.55);
+    font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, Oxygen, Ubuntu, sans-serif;
+}
+
+.recent-item
+{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 0;
+    border-bottom: 1px solid #3a3a47;
+    cursor: pointer;
+    transition: background 0.2s;
+    border-radius: 8px;
+    padding-left: 8px;
+    padding-right: 8px;
+    font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, Oxygen, Ubuntu, sans-serif;
+}
+
+.recent-item:hover
+{
+    background: #3a3a47;
+}
+
+.recent-item:last-child
+{
+    border-bottom: none;
+}
+
+.recent-item .info
+{
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex: 1;
+    min-width: 0;
+}
+
+.recent-item .tag
+{
+    width: 12px !important;
+    height: 12px !important;
+    border-radius: 50% !important;
+    flex-shrink: 0 !important;
+    min-width: 12px !important;
+    min-height: 12px !important;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    display: inline-block !important;
+}
+
+.recent-item .details
+{
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-width: 0;
+}
+
+.recent-item .category-name
+{
+    font-size: 16px;
+    font-weight: 700;
+    color: #e2e8f0;
+    font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, Oxygen, Ubuntu, sans-serif;
+}
+
+.recent-item .description
+{
+    font-size: 13px;
+    color: #a0aec0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, Oxygen, Ubuntu, sans-serif;
+}
+
+.recent-item .amount
+{
+    font-weight: 700;
+    font-size: 18px;
+    white-space: nowrap;
+    font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, Oxygen, Ubuntu, sans-serif;
+}
+
+.recent-item .amount.income
+{
+    color: #5cd59b;
+}
+
+.recent-item .amount.expense
+{
+    color: #f27362;
+}
+
+.recent-item .date
+{
+    font-size: 12px;
+    color: #a0aec0;
+    text-align: right;
+    white-space: nowrap;
+    font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, Oxygen, Ubuntu, sans-serif;
+}
+
+.recent-item .right
+{
+    text-align: right;
+    flex-shrink: 0;
+    margin-left: 10px;
+}
+
+.fab
+{
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background: #00aff5;
+    color: white;
+    border: none;
+    font-size: 32px;
+    line-height: 1;
+    cursor: pointer;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.15s ease, opacity 0.15s ease;
+}
+
+.fab:hover
+{
+    background: #00c6ff;
+}
+
+.fab:active
+{
+    background: #0090cc;
+    opacity: 0.9;
+}
+
+#modal-overlay
+{
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.6);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2000;
+    padding: 20px;
+}
+
+#modal-overlay.hidden
+{
+    display: none;
+}
+
+#modal
+{
+    background: #32323e;
+    border-radius: 20px;
+    padding: 24px 20px;
+    width: 100%;
+    max-width: 400px;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6);
+    font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, Oxygen, Ubuntu, sans-serif;
+}
+
+#modal h2
+{
+    margin-bottom: 18px;
+    font-size: 20px;
+    font-weight: 700;
+    color: #e2e8f0;
+}
+
+.form-group
+{
+    margin-bottom: 16px;
+}
+
+.form-group label
+{
+    display: block;
+    font-size: 13px;
+    font-weight: 600;
+    margin-bottom: 4px;
+    color: #cbd5e0;
+}
+
+.form-group input,
+.form-group select
+{
+    width: 100%;
+    padding: 10px 12px;
+    border: 2px solid #3a3a47;
+    border-radius: 10px;
+    font-size: 15px;
+    background: #282832;
+    color: #e2e8f0;
+    font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, Oxygen, Ubuntu, sans-serif;
+}
+
+.form-group input:focus,
+.form-group select:focus
+{
+    outline: none;
+    border-color: #00aff5;
+    background: #2d2d38;
+}
+
+#modal button[type="submit"]
+{
+    width: 100%;
+    padding: 12px;
+    background: #00aff5;
+    color: white;
+    border: none;
+    border-radius: 10px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    margin-top: 6px;
+    font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, Oxygen, Ubuntu, sans-serif;
+}
+
+#modal button[type="submit"]:hover
+{
+    background: #00c6ff;
+}
+
+#modal button[type="submit"]:active
+{
+    background: #0090cc;
+}
+
+#close-modal
+{
+    width: 100%;
+    padding: 12px;
+    background: #3a3a47;
+    color: #e2e8f0;
+    border: none;
+    border-radius: 10px;
+    font-size: 15px;
+    font-weight: 500;
+    cursor: pointer;
+    margin-top: 8px;
+    font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, Oxygen, Ubuntu, sans-serif;
+}
+
+#close-modal:hover
+{
+    background: #454552;
+}
+
+#delete-modal-overlay
+{
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.6);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 3000;
+    padding: 20px;
+}
+
+#delete-modal-overlay.hidden
+{
+    display: none;
+}
+
+#delete-modal
+{
+    background: #32323e;
+    border-radius: 20px;
+    padding: 28px 24px;
+    width: 100%;
+    max-width: 380px;
+    text-align: center;
+    font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, Oxygen, Ubuntu, sans-serif;
+}
+
+#delete-modal h2
+{
+    font-size: 20px;
+    font-weight: 700;
+    color: #f27362;
     margin-bottom: 12px;
 }
 
-#delete-modal p {
+#delete-modal p
+{
     font-size: 16px;
-    color: #4a5568;
+    color: #cbd5e0;
     margin-bottom: 20px;
 }
 
-#delete-modal .buttons {
+#delete-modal .buttons
+{
     display: flex;
     gap: 12px;
 }
 
-#delete-modal .buttons button {
+#delete-modal .buttons button
+{
     flex: 1;
     padding: 12px;
     border: none;
@@ -412,40 +699,49 @@ header h1 span {
     font-size: 16px;
     font-weight: 600;
     cursor: pointer;
+    font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, Oxygen, Ubuntu, sans-serif;
 }
 
-#delete-modal .btn-confirm {
-    background: #e53e3e;
+#delete-modal .btn-confirm
+{
+    background: #f27362;
     color: white;
 }
 
-#delete-modal .btn-confirm:hover {
-    background: #c53030;
+#delete-modal .btn-confirm:hover
+{
+    background: #d85a4a;
 }
 
-#delete-modal .btn-cancel {
-    background: #f0f4f8;
-    color: #4a5568;
+#delete-modal .btn-cancel
+{
+    background: #3a3a47;
+    color: #e2e8f0;
 }
 
-#delete-modal .btn-cancel:hover {
-    background: #e2e8f0;
+#delete-modal .btn-cancel:hover
+{
+    background: #454552;
 }
 
-.loading {
+.loading
+{
     text-align: center;
     padding: 20px;
     color: #a0aec0;
     font-size: 14px;
+    font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, Oxygen, Ubuntu, sans-serif;
 }
 
 /* Скрываем стандартные маркеры легенды Chart.js */
-.chart-container canvas + div {
+.chart-container canvas + div
+{
     display: none !important;
 }
 
 /* Стили для кастомной легенды */
-.custom-legend {
+.custom-legend
+{
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
@@ -454,91 +750,108 @@ header h1 span {
     padding: 0 4px;
 }
 
-.custom-legend-item {
+.custom-legend-item
+{
     display: flex;
     align-items: center;
     gap: 6px;
     font-size: 12px;
     font-weight: 500;
-    color: #2d3748;
+    color: #e2e8f0;
+    font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, Oxygen, Ubuntu, sans-serif;
 }
 
-.custom-legend-line {
+.custom-legend-line
+{
     width: 20px;
     height: 3px;
     border-radius: 2px;
     flex-shrink: 0;
 }
 
-@media (max-width: 480px) {
-    body {
+@media (max-width: 480px)
+{
+    body
+    {
         padding: 8px;
         padding-bottom: 80px;
     }
     
-    header h1 {
+    header h1
+    {
         font-size: 20px;
     }
     
-    #current-date {
+    #current-date
+    {
         font-size: 12px;
     }
     
-    .balance-card {
+    .balance-card
+    {
         padding: 18px 16px;
     }
     
-    #balance-amount {
+    #balance-amount
+    {
         font-size: 30px;
     }
     
-    #chart-section {
+    #chart-section
+    {
         padding: 12px;
     }
     
-    .chart-container {
-        height: 250px;
+    .chart-container
+    {
+        height: 320px;
     }
     
-    .histogram-container {
-        height: 170px;
-    }
-    .histogram-container canvas {
-        height: 170px !important;
+    .histogram-container
+    {
+        height: 220px;
     }
     
-    #graph-section canvas {
-        height: 150px !important;
+    .graph-container
+    {
+        height: 200px;
     }
     
-    #recent-section {
+    #recent-section
+    {
         padding: 12px;
     }
     
-    #recent-section h3 {
+    #recent-section h3
+    {
         font-size: 16px;
     }
     
-    .recent-item {
+    .recent-item
+    {
         padding: 8px 0;
     }
     
-    .recent-item .category-name {
+    .recent-item .category-name
+    {
         font-size: 14px;
     }
     
-    .recent-item .amount {
+    .recent-item .amount
+    {
         font-size: 16px;
     }
     
-    .recent-item .tag {
+    .recent-item .tag
+    {
         width: 10px !important;
         height: 10px !important;
         min-width: 10px !important;
         min-height: 10px !important;
     }
     
-    .fab {
+    .fab
+    {
         bottom: 16px;
         right: 16px;
         width: 50px;

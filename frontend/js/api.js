@@ -37,6 +37,9 @@ class API {
     static async getBalance() {
         return this.request('/transactions/balance');
     }
+    static async getMonthSummary() {
+        return this.request('/transactions/month-summary');
+    }
     static async getExpensesByCategory() {
         return this.request('/transactions/expenses-by-category');
     }
@@ -48,5 +51,10 @@ class API {
     }
     static async getTransactionsByMonth(year, month) {
         return this.request('/transactions/by-month?year=' + year + '&month=' + month);
+    }
+    static async deleteTransaction(id) {
+        return this.request('/transactions/' + id, {
+            method: 'DELETE',
+        });
     }
 }

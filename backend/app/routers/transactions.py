@@ -49,6 +49,10 @@ def get_daily_balance(db: Session = Depends(get_db)):
 def get_monthly_expenses(db: Session = Depends(get_db)):
     return crud.get_monthly_expenses(db)
 
+@router.get("/month-summary")
+def get_month_summary(db: Session = Depends(get_db)):
+    return crud.get_month_summary(db)
+
 @router.get("/export")
 def export_transactions(db: Session = Depends(get_db)):
     try:
@@ -131,8 +135,12 @@ async def import_transactions(
                 date=date
             )
             
-            crud.create_transaction(db, transaction_data)
-            imported += 1
+            # Пропускаем уже существующие записи — защита от дубликатов
+            result = crud.create_transaction(db, transaction_data, skip_duplicates=True)
+            if result is None:
+                skipped += 1
+            else:
+                imported += 1
             
         except Exception as e:
             skipped += 1
@@ -143,6 +151,21 @@ async def import_transactions(
         "skipped": skipped,
         "message": f"Импортировано {imported} записей, пропущено {skipped}"
     })
+
+@router.post("/dedupe")
+def dedupe_transactions(db: Session = Depends(get_db)):
+    """Удаляет существующие дубликаты в базе данных."""
+    try:
+        removed = crud.dedupe_transactions(db)
+        return JSONResponse({
+            "removed": removed,
+            "message": f"Удалено дубликатов: {removed}"
+        })
+    except Exception as e:
+        return JSONResponse(
+            status_code=500,
+            content={"error": str(e)}
+        )
 
 @router.delete("/{transaction_id}")
 def delete_transaction(

@@ -14,6 +14,38 @@ class App {
         setInterval(() => this.refreshAll(), 30000);
         
         this.initExportImport();
+        this.initTopExpenseClick();
+        this.initInfoModal();
+    }
+
+    initTopExpenseClick() {
+        const card = document.getElementById('top-expense-card');
+        if (card) {
+            card.addEventListener('click', () => this.balance.onTopClick());
+        }
+    }
+
+    initInfoModal() {
+        const overlay = document.getElementById('info-modal-overlay');
+        const closeBtn = document.getElementById('info-modal-close');
+        if (closeBtn) {
+            closeBtn.addEventListener('click', () => overlay.classList.add('hidden'));
+        }
+        if (overlay) {
+            overlay.addEventListener('click', (e) => {
+                if (e.target === overlay) overlay.classList.add('hidden');
+            });
+        }
+    }
+
+    showInfoModal(title, bodyHtml) {
+        const overlay = document.getElementById('info-modal-overlay');
+        const titleEl = document.getElementById('info-modal-title');
+        const bodyEl = document.getElementById('info-modal-body');
+        if (!overlay) return;
+        if (titleEl) titleEl.textContent = title;
+        if (bodyEl) bodyEl.innerHTML = bodyHtml;
+        overlay.classList.remove('hidden');
     }
     
     initExportImport() {

@@ -105,7 +105,6 @@ class ModalComponent {
         try {
             const result = await API.createTransaction(data);
             console.log('✅ Сохранено в БД:', result);
-            showSuccess('Операция добавлена в БД!');
             this.close();
             if (this.onSuccess) {
                 this.onSuccess();

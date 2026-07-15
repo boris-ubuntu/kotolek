@@ -9,16 +9,17 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
     <style>
         #chart-section {
-            background: white;
+            background: #32323e;
             border-radius: 16px;
             padding: 20px 16px 12px 16px;
             margin-bottom: 16px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.4);
         }
         #chart-section h3 {
             font-size: 16px;
             font-weight: 700;
-            color: #2d3748;
+            color: #ffffff;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.55);
             margin-bottom: 12px;
         }
         .detail-chart-wrapper {
@@ -47,35 +48,77 @@
                 max-width: 320px;
             }
         }
+        /* Кнопка «Назад» сверху слева */
+        .back-btn {
+            background: #3a3a47;
+            border: none;
+            color: #e2e8f0;
+            font-size: 14px;
+            font-weight: 600;
+            padding: 8px 14px;
+            border-radius: 12px;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.35);
+            transition: background 0.15s ease;
+            font-family: 'Segoe UI', Tahoma, sans-serif;
+        }
+        .back-btn:hover {
+            background: #454552;
+        }
+        .back-btn:active {
+            opacity: 0.9;
+        }
+        /* Заголовок месяца по центру, без иконки */
+        header {
+            position: relative;
+        }
+        .month-title-center {
+            position: absolute;
+            left: 0;
+            right: 0;
+            text-align: center;
+            font-size: 20px;
+            font-weight: 700;
+            color: #e2e8f0;
+            pointer-events: none;
+            z-index: 0;
+        }
+        .back-btn {
+            position: relative;
+            z-index: 1;
+        }
     </style>
 </head>
 <body>
     <div id="app">
         <header>
-            <button id="back-btn" style="background:none;border:none;font-size:24px;cursor:pointer;padding:8px;">←</button>
-            <h1>📅 <span id="month-title">Январь 2026</span></h1>
+            <button id="back-btn" class="back-btn" aria-label="Назад">← Назад</button>
+            <h1 class="month-title-center"><span id="month-title">Январь 2026</span></h1>
             <span></span>
         </header>
         <main>
-            <section id="summary-section" style="background:white;border-radius:16px;padding:16px;margin-bottom:16px;box-shadow:0 2px 8px rgba(0,0,0,0.06);">
+            <section id="summary-section" style="background:#32323e;border-radius:16px;padding:16px;margin-bottom:16px;box-shadow:0 2px 8px rgba(0,0,0,0.4);">
                 <div style="display:flex;justify-content:space-around;text-align:center;">
                     <div>
                         <div style="font-size:12px;color:#a0aec0;">Доходы</div>
-                        <div id="summary-income" style="font-size:20px;font-weight:700;color:#48bb78;">0 ₽</div>
+                        <div id="summary-income" style="font-size:20px;font-weight:700;color:#5cd59b;">0 ₽</div>
                     </div>
                     <div>
                         <div style="font-size:12px;color:#a0aec0;">Расходы</div>
-                        <div id="summary-expense" style="font-size:20px;font-weight:700;color:#fc8181;">0 ₽</div>
+                        <div id="summary-expense" style="font-size:20px;font-weight:700;color:#f27362;">0 ₽</div>
                     </div>
                     <div>
                         <div style="font-size:12px;color:#a0aec0;">Баланс</div>
-                        <div id="summary-balance" style="font-size:20px;font-weight:700;">0 ₽</div>
+                        <div id="summary-balance" style="font-size:20px;font-weight:700;color:#e2e8f0;">0 ₽</div>
                     </div>
                 </div>
             </section>
             
             <section id="chart-section">
-                <h3>📊 Расходы по категориям</h3>
+                <h3>Расходы по категориям</h3>
                 <div class="detail-chart-wrapper">
                     <div class="detail-chart-container">
                         <canvas id="month-detail-chart"></canvas>
@@ -83,8 +126,8 @@
                 </div>
             </section>
             
-            <section id="transactions-section" style="background:white;border-radius:16px;padding:16px;box-shadow:0 2px 8px rgba(0,0,0,0.06);">
-                <h3 style="font-size:16px;font-weight:700;margin-bottom:12px;">📋 Все операции</h3>
+            <section id="transactions-section" style="background:#32323e;border-radius:16px;padding:16px;box-shadow:0 2px 8px rgba(0,0,0,0.4);">
+                <h3 style="font-size:16px;font-weight:700;margin-bottom:12px;color:#ffffff;text-shadow:0 1px 2px rgba(0,0,0,0.55);">Все операции</h3>
                 <div id="transactions-list">
                     <div class="loading">Загрузка...</div>
                 </div>
@@ -149,12 +192,12 @@
         
         function getCategoryColorByGroup(groupName) {
             const colors = {
-                'Еда': '#FF0000',
-                'Авто': '#8B00FF',
-                'Товары': '#00BFFF',
-                'Мероприятия': '#00FF00',
-                'Платежи': '#FF8C00',
-                'Доход': '#FFD700'
+                'Еда': '#5390d9',
+                'Авто': '#56cfe1',
+                'Товары': '#5e60ce',
+                'Мероприятия': '#6930c3',
+                'Платежи': '#2acbcb',
+                'Доход': '#4ea8de'
             };
             return colors[groupName] || '#999999';
         }
@@ -192,7 +235,7 @@
             document.getElementById('summary-income').textContent = formatCurrency(income);
             document.getElementById('summary-expense').textContent = formatCurrency(expense);
             document.getElementById('summary-balance').textContent = formatCurrency(balance);
-            document.getElementById('summary-balance').style.color = balance >= 0 ? '#48bb78' : '#fc8181';
+            document.getElementById('summary-balance').style.color = balance >= 0 ? '#5cd59b' : '#f27362';
         }
         
         function renderDetailChart(transactions) {
@@ -237,58 +280,98 @@
                     datasets: [{
                         data: values,
                         backgroundColor: colors,
-                        borderWidth: 3,
-                        borderColor: '#fff',
-                        hoverOffset: 10,
+                        borderWidth: 2,
+                        borderColor: '#32323e',
+                        hoverOffset: 8,
                     }]
                 },
                 options: {
                     responsive: true,
+                    // true — чтобы пончи вписывался в квадратный контейнер
+                    // и оставался круглым (без искажения)
                     maintainAspectRatio: true,
-                    cutout: '60%',
+                    cutout: '62%',
+                    layout: {
+                        padding: 6
+                    },
                     plugins: {
                         legend: {
-                            position: 'bottom',
-                            labels: {
-                                padding: 8,
-                                font: {
-                                    size: 11,
-                                    weight: '500',
-                                },
-                                usePointStyle: true,
-                                pointStyle: 'line',
-                                pointStyleWidth: 20,
-                                generateLabels: function(chart) {
-                                    const data = chart.data;
-                                    return data.labels.map(function(label, i) {
-                                        return {
-                                            text: label + '  ' + formatCurrency(data.datasets[0].data[i]),
-                                            fillStyle: data.datasets[0].backgroundColor[i],
-                                            strokeStyle: data.datasets[0].backgroundColor[i],
-                                            pointStyle: 'line',
-                                            index: i,
-                                        };
-                                    });
+                            display: false,
+                        },
+                        tooltip: {
+                            bodyFont: { family: 'Segoe UI, Tahoma, sans-serif', size: 13 },
+                            callbacks: {
+                                label: function(context) {
+                                    const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                    const pct = ((context.raw / total) * 100).toFixed(1);
+                                    return ' ' + context.label + ': ' + formatCurrency(context.raw) + ' (' + pct + '%)';
                                 }
                             }
                         }
                     }
                 },
                 plugins: [{
+                    id: 'innerLabels',
+                    afterDraw(chart) {
+                        const { ctx, data, chartArea } = chart;
+                        const meta = chart.getDatasetMeta(0);
+                        if (!meta.data || meta.data.length === 0) return;
+
+                        const total = data.datasets[0].data.reduce((a, b) => a + b, 0);
+                        const centerX = chartArea.left + chartArea.width / 2;
+                        const centerY = chartArea.top + chartArea.height / 2;
+                        const outerRadius = meta.data[0].outerRadius;
+                        const innerRadius = meta.data[0].innerRadius;
+
+                        const isNarrow = chart.width < 500;
+                        const nameFont = isNarrow ? 11 : 13;
+                        const pctFont = isNarrow ? 10 : 12;
+
+                        ctx.save();
+                        ctx.textAlign = 'center';
+                        ctx.textBaseline = 'middle';
+
+                        for (let i = 0; i < data.labels.length; i++) {
+                            const arc = meta.data[i];
+                            const angle = arc.endAngle - arc.startAngle;
+                            if (angle < 0.18) continue;
+
+                            const midAngle = arc.startAngle + angle / 2;
+                            const r = (innerRadius + outerRadius) / 2;
+                            const x = centerX + Math.cos(midAngle) * r;
+                            const y = centerY + Math.sin(midAngle) * r;
+                            const value = data.datasets[0].data[i];
+                            const pct = ((value / total) * 100).toFixed(1);
+
+                            ctx.fillStyle = '#ffffff';
+                            ctx.shadowColor = 'rgba(0,0,0,0.65)';
+                            ctx.shadowBlur = 3;
+
+                            ctx.font = 'bold ' + nameFont + 'px Segoe UI, Tahoma, sans-serif';
+                            ctx.fillText(data.labels[i], x, y - (isNarrow ? 7 : 8));
+
+                            ctx.font = pctFont + 'px Segoe UI, Tahoma, sans-serif';
+                            ctx.fillStyle = 'rgba(255,255,255,0.85)';
+                            ctx.fillText(pct + '%', x, y + (isNarrow ? 6 : 7));
+                        }
+
+                        ctx.restore();
+                    }
+                }, {
                     id: 'centerText',
                     beforeDraw: function(chart) {
                         const width = chart.width;
                         const height = chart.height;
                         const ctx = chart.ctx;
                         ctx.restore();
-                        const fontSize = (height / 160).toFixed(2);
-                        ctx.font = 'bold ' + fontSize + 'em sans-serif';
+                        const fontSize = (height / 150).toFixed(2);
+                        ctx.font = 'bold ' + fontSize + 'em Segoe UI, Tahoma, sans-serif';
                         ctx.textBaseline = 'middle';
                         const text = formatCurrency(totalExpenses);
-                        const textY = height / 2 - 5;
-                        ctx.fillStyle = '#2d3748';
+                        const textY = height / 2;
+                        ctx.fillStyle = '#e2e8f0';
                         ctx.textAlign = 'center';
-                        ctx.fillText(text, width/2, textY);
+                        ctx.fillText(text, width / 2, textY);
                         ctx.save();
                     }
                 }]

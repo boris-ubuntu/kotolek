@@ -56,7 +56,48 @@ def _validate_category_exists(db: Session, category_id: int):
         )
 
 
-def create_transaction(db: Session, transaction: schemas.TransactionCreate):
+def transaction_exists(db: Session, amount, category_id, is_income, date, description):
+    """Проверяет, есть ли уже такая транзакция (по сигнатуре) — борьба с дублями."""
+    query = db.query(models.Transaction).filter(
+        models.Transaction.amount == amount,
+        models.Transaction.category_id == category_id,
+        models.Transaction.is_income == is_income,
+        models.Transaction.date == date,
+    )
+    if description:
+        query = query.filter(models.Transaction.description == description)
+    else:
+        query = query.filter(models.Transaction.description.is_(None))
+    return query.first() is not None
+
+
+def dedupe_transactions(db: Session):
+    """Удаляет существующие дубликаты по сигнатуре amount+category_id+is_income+date+description."""
+    rows = db.query(models.Transaction).order_by(models.Transaction.id).all()
+    seen = set()
+    removed = 0
+    for t in rows:
+        key = (round(float(t.amount), 2), t.category_id, t.is_income, t.date, t.description)
+        if key in seen:
+            db.delete(t)
+            removed += 1
+        else:
+            seen.add(key)
+    db.commit()
+    return removed
+
+
+def create_transaction(db: Session, transaction: schemas.TransactionCreate, skip_duplicates: bool = False):
+    if skip_duplicates and transaction.date is not None:
+        if transaction_exists(
+            db,
+            transaction.amount,
+            transaction.category_id,
+            transaction.is_income,
+            transaction.date,
+            transaction.description,
+        ):
+            return None
     _validate_category_exists(db, transaction.category_id)
     db_transaction = models.Transaction(
         amount=transaction.amount,
@@ -219,12 +260,106 @@ def get_daily_balance(db: Session):
     
     return result
 
+def get_month_summary(db: Session):
+    """Сводка по текущему месяцу: самый крупный расход и сравнение
+    с предыдущим месяцем в процентах."""
+    now = datetime.now()
+    cur_start = datetime(now.year, now.month, 1)
+    _, cur_last = calendar.monthrange(now.year, now.month)
+    cur_end = datetime(now.year, now.month, cur_last, 23, 59, 59)
+
+    if now.month == 1:
+        prev_year, prev_month = now.year - 1, 12
+    else:
+        prev_year, prev_month = now.year, now.month - 1
+    prev_start = datetime(prev_year, prev_month, 1)
+    _, prev_last = calendar.monthrange(prev_year, prev_month)
+    prev_end = datetime(prev_year, prev_month, prev_last, 23, 59, 59)
+
+    def month_expense(start, end):
+        return float(
+            db.query(func.coalesce(func.sum(models.Transaction.amount), 0.0))
+            .filter(
+                and_(
+                    models.Transaction.is_income == False,
+                    models.Transaction.date >= start,
+                    models.Transaction.date <= end,
+                )
+            )
+            .scalar()
+        )
+
+    def top_expense(start, end):
+        row = (
+            db.query(
+                models.Transaction.id,
+                models.Transaction.amount,
+                models.Transaction.description,
+                models.Transaction.date,
+                models.Category.name.label("category_name"),
+                models.Category.color.label("category_color"),
+            )
+            .join(models.Category, models.Transaction.category_id == models.Category.id)
+            .filter(
+                and_(
+                    models.Transaction.is_income == False,
+                    models.Transaction.date >= start,
+                    models.Transaction.date <= end,
+                )
+            )
+            .order_by(models.Transaction.amount.desc())
+            .first()
+        )
+        if row is None:
+            return 0.0, None
+        detail = {
+            "id": row.id,
+            "amount": float(row.amount),
+            "description": row.description,
+            "date": row.date.isoformat(),
+            "category_name": row.category_name,
+            "category_color": row.category_color,
+        }
+        return float(row.amount), detail
+
+    def month_income(start, end):
+        return float(
+            db.query(func.coalesce(func.sum(models.Transaction.amount), 0.0))
+            .filter(
+                and_(
+                    models.Transaction.is_income == True,
+                    models.Transaction.date >= start,
+                    models.Transaction.date <= end,
+                )
+            )
+            .scalar()
+        )
+
+    cur_expense = month_expense(cur_start, cur_end)
+    prev_expense = month_expense(prev_start, prev_end)
+    top, top_detail = top_expense(cur_start, cur_end)
+    income = month_income(cur_start, cur_end)
+
+    pct = None
+    if prev_expense > 0:
+        pct = round((cur_expense - prev_expense) / prev_expense * 100, 1)
+
+    return {
+        "top_expense": top,
+        "top_expense_detail": top_detail,
+        "current_month_expense": cur_expense,
+        "previous_month_expense": prev_expense,
+        "current_month_income": income,
+        "change_pct": pct,
+    }
+
+
 def get_monthly_expenses(db: Session):
-    """Последние 6 месяцев с корректным расчётом (без дрейфа timedelta)."""
+    """Последние 9 месяцев с корректным расчётом (без дрейфа timedelta)."""
     now = datetime.now()
     months = []
 
-    for i in range(5, -1, -1):
+    for i in range(8, -1, -1):
         total_months = now.year * 12 + (now.month - 1) - i
         year = total_months // 12
         month = total_months % 12 + 1
@@ -250,7 +385,7 @@ def get_monthly_expenses(db: Session):
                 "month": month_start.strftime("%b"),
                 "year": month_start.year,
                 "total": float(total),
-                "color": "#e53e3e" if float(total) > 75000 else "#48bb78",
+                "color": "#f27362" if float(total) >= 75000 else "#00aff5",
             }
         )
 

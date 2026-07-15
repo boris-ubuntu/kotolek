@@ -1,0 +1,36 @@
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: kotolek
+      POSTGRES_USER: kotolek
+      POSTGRES_PASSWORD: kotolek
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U kotolek -d kotolek"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  backend:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+    ports:
+      - "8080:8080"
+    environment:
+      # DATABASE_URL собирается автоматически из этих переменных (см. app/config.py)
+      POSTGRES_USER: kotolek
+      POSTGRES_PASSWORD: kotolek
+      POSTGRES_DB: kotolek
+      DB_HOST: db
+      DB_PORT: 5432
+    depends_on:
+      db:
+        condition: service_healthy
+
+volumes:
+  pgdata:
