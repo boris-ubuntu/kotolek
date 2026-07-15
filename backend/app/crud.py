@@ -56,9 +56,10 @@ def _validate_category_exists(db: Session, category_id: int):
         )
 
 
-def transaction_exists(db: Session, amount, category_id, is_income, date, description):
-    """Проверяет, есть ли уже такая транзакция (по сигнатуре) — борьба с дублями."""
+def transaction_exists(db: Session, amount, category_id, is_income, date, description, user_id):
+    """Проверяет, есть ли уже такая транзакция (по сигнатуре) — борьба с дублями (в рамках пользователя)."""
     query = db.query(models.Transaction).filter(
+        models.Transaction.user_id == user_id,
         models.Transaction.amount == amount,
         models.Transaction.category_id == category_id,
         models.Transaction.is_income == is_income,
@@ -71,13 +72,16 @@ def transaction_exists(db: Session, amount, category_id, is_income, date, descri
     return query.first() is not None
 
 
-def dedupe_transactions(db: Session):
-    """Удаляет существующие дубликаты по сигнатуре amount+category_id+is_income+date+description."""
-    rows = db.query(models.Transaction).order_by(models.Transaction.id).all()
+def dedupe_transactions(db: Session, user_id: int = None):
+    """Удаляет существующие дубликаты по сигнатуре amount+category_id+is_income+date+description (в рамках пользователя)."""
+    q = db.query(models.Transaction)
+    if user_id is not None:
+        q = q.filter(models.Transaction.user_id == user_id)
+    rows = q.order_by(models.Transaction.id).all()
     seen = set()
     removed = 0
     for t in rows:
-        key = (round(float(t.amount), 2), t.category_id, t.is_income, t.date, t.description)
+        key = (t.user_id, round(float(t.amount), 2), t.category_id, t.is_income, t.date, t.description)
         if key in seen:
             db.delete(t)
             removed += 1
@@ -87,7 +91,7 @@ def dedupe_transactions(db: Session):
     return removed
 
 
-def create_transaction(db: Session, transaction: schemas.TransactionCreate, skip_duplicates: bool = False):
+def create_transaction(db: Session, transaction: schemas.TransactionCreate, user_id: int, skip_duplicates: bool = False):
     if skip_duplicates and transaction.date is not None:
         if transaction_exists(
             db,
@@ -96,10 +100,12 @@ def create_transaction(db: Session, transaction: schemas.TransactionCreate, skip
             transaction.is_income,
             transaction.date,
             transaction.description,
+            user_id,
         ):
             return None
     _validate_category_exists(db, transaction.category_id)
     db_transaction = models.Transaction(
+        user_id=user_id,
         amount=transaction.amount,
         category_id=transaction.category_id,
         description=transaction.description,
@@ -111,18 +117,22 @@ def create_transaction(db: Session, transaction: schemas.TransactionCreate, skip
     db.refresh(db_transaction)
     return db_transaction
 
-def delete_transaction(db: Session, transaction_id: int):
-    db_transaction = db.query(models.Transaction).filter(models.Transaction.id == transaction_id).first()
+def delete_transaction(db: Session, transaction_id: int, user_id: int):
+    db_transaction = db.query(models.Transaction).filter(
+        models.Transaction.id == transaction_id,
+        models.Transaction.user_id == user_id,
+    ).first()
     if not db_transaction:
         raise HTTPException(status_code=404, detail="Транзакция не найдена")
     db.delete(db_transaction)
     db.commit()
     return {"message": "Транзакция удалена"}
 
-def get_all_transactions(db: Session, skip: int = 0, limit: int = 100):
+def get_all_transactions(db: Session, user_id: int, skip: int = 0, limit: int = 100):
     return [
         _build_transaction_response(r)
         for r in _get_transactions_query(db)
+        .filter(models.Transaction.user_id == user_id)
         .order_by(models.Transaction.date.desc())
         .offset(skip)
         .limit(limit)
@@ -130,17 +140,18 @@ def get_all_transactions(db: Session, skip: int = 0, limit: int = 100):
     ]
 
 
-def get_recent_transactions(db: Session, limit: int = 5):
+def get_recent_transactions(db: Session, user_id: int, limit: int = 5):
     return [
         _build_transaction_response(r)
         for r in _get_transactions_query(db)
+        .filter(models.Transaction.user_id == user_id)
         .order_by(models.Transaction.date.desc())
         .limit(limit)
         .all()
     ]
 
 
-def get_transactions_by_month(db: Session, year: int, month: int):
+def get_transactions_by_month(db: Session, user_id: int, year: int, month: int):
     start_date = datetime(year, month, 1)
     _, last_day = calendar.monthrange(year, month)
     end_date = datetime(year, month, last_day, 23, 59, 59)
@@ -149,6 +160,7 @@ def get_transactions_by_month(db: Session, year: int, month: int):
         _build_transaction_response(r)
         for r in _get_transactions_query(db)
         .filter(
+            models.Transaction.user_id == user_id,
             models.Transaction.date >= start_date,
             models.Transaction.date <= end_date,
         )
@@ -156,7 +168,7 @@ def get_transactions_by_month(db: Session, year: int, month: int):
         .all()
     ]
 
-def get_balance(db: Session):
+def get_balance(db: Session, user_id: int):
     now = datetime.now()
     start_date = datetime(now.year, now.month, 1)
     
@@ -164,6 +176,7 @@ def get_balance(db: Session):
         func.coalesce(
             func.sum(models.Transaction.amount).filter(
                 and_(
+                    models.Transaction.user_id == user_id,
                     models.Transaction.is_income == True,
                     models.Transaction.date >= start_date,
                 )
@@ -173,6 +186,7 @@ def get_balance(db: Session):
         func.coalesce(
             func.sum(models.Transaction.amount).filter(
                 and_(
+                    models.Transaction.user_id == user_id,
                     models.Transaction.is_income == False,
                     models.Transaction.date >= start_date,
                 )
@@ -190,7 +204,7 @@ def get_balance(db: Session):
         "month_expenses": month_expenses,
     }
 
-def get_expenses_by_category(db: Session):
+def get_expenses_by_category(db: Session, user_id: int):
     now = datetime.now()
     start_date = datetime(now.year, now.month, 1)
     
@@ -203,6 +217,7 @@ def get_expenses_by_category(db: Session):
         models.Transaction.category_id == models.Category.id
     ).filter(
         and_(
+            models.Transaction.user_id == user_id,
             models.Transaction.is_income == False,
             models.Transaction.date >= start_date
         )
@@ -219,7 +234,7 @@ def get_expenses_by_category(db: Session):
         for r in results
     ]
 
-def get_daily_balance(db: Session):
+def get_daily_balance(db: Session, user_id: int):
     now = datetime.now()
     start_date = datetime(now.year, now.month, 1)
     end_date = now
@@ -229,6 +244,7 @@ def get_daily_balance(db: Session):
         models.Transaction.amount,
         models.Transaction.is_income
     ).filter(
+        models.Transaction.user_id == user_id,
         models.Transaction.date >= start_date,
         models.Transaction.date <= end_date
     ).order_by(
@@ -260,9 +276,9 @@ def get_daily_balance(db: Session):
     
     return result
 
-def get_month_summary(db: Session):
+def get_month_summary(db: Session, user_id: int):
     """Сводка по текущему месяцу: самый крупный расход и сравнение
-    с предыдущим месяцем в процентах."""
+    с предыдущим месяцем в процентах (в рамках пользователя)."""
     now = datetime.now()
     cur_start = datetime(now.year, now.month, 1)
     _, cur_last = calendar.monthrange(now.year, now.month)
@@ -281,6 +297,7 @@ def get_month_summary(db: Session):
             db.query(func.coalesce(func.sum(models.Transaction.amount), 0.0))
             .filter(
                 and_(
+                    models.Transaction.user_id == user_id,
                     models.Transaction.is_income == False,
                     models.Transaction.date >= start,
                     models.Transaction.date <= end,
@@ -302,6 +319,7 @@ def get_month_summary(db: Session):
             .join(models.Category, models.Transaction.category_id == models.Category.id)
             .filter(
                 and_(
+                    models.Transaction.user_id == user_id,
                     models.Transaction.is_income == False,
                     models.Transaction.date >= start,
                     models.Transaction.date <= end,
@@ -327,6 +345,7 @@ def get_month_summary(db: Session):
             db.query(func.coalesce(func.sum(models.Transaction.amount), 0.0))
             .filter(
                 and_(
+                    models.Transaction.user_id == user_id,
                     models.Transaction.is_income == True,
                     models.Transaction.date >= start,
                     models.Transaction.date <= end,
@@ -354,8 +373,8 @@ def get_month_summary(db: Session):
     }
 
 
-def get_monthly_expenses(db: Session):
-    """Последние 9 месяцев с корректным расчётом (без дрейфа timedelta)."""
+def get_monthly_expenses(db: Session, user_id: int):
+    """Последние 9 месяцев с корректным расчётом (без дрейфа timedelta) — в рамках пользователя."""
     now = datetime.now()
     months = []
 
@@ -372,6 +391,7 @@ def get_monthly_expenses(db: Session):
             db.query(func.coalesce(func.sum(models.Transaction.amount), 0.0))
             .filter(
                 and_(
+                    models.Transaction.user_id == user_id,
                     models.Transaction.is_income == False,
                     models.Transaction.date >= month_start,
                     models.Transaction.date <= month_end,
