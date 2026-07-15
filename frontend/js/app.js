@@ -16,6 +16,17 @@ class App {
         this.initExportImport();
         this.initTopExpenseClick();
         this.initInfoModal();
+        this.initLogout();
+    }
+
+    initLogout() {
+        const btn = document.getElementById('logout-btn');
+        if (btn) {
+            btn.addEventListener('click', () => {
+                API.logout();
+                App.showLogin();
+            });
+        }
     }
 
     static showApp() {

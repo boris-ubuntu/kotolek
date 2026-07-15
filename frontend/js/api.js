@@ -14,6 +14,10 @@ class API {
         }
     }
 
+    static logout() {
+        API.setToken('');
+    }
+
     static async request(endpoint, options = {}) {
         const url = '/api' + endpoint;
         const headers = {
