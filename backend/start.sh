@@ -1,8 +1,11 @@
 #!/bin/sh
 set -e
 
-# Собираем DATABASE_URL из переменных окружения (как в app/config.py)
-export DATABASE_URL="postgresql://${POSTGRES_USER:-kotolek}:${POSTGRES_PASSWORD:-kotolek}@${DB_HOST:-db}:${DB_PORT:-5432}/${POSTGRES_DB:-kotolek}"
+# Используем готовый DATABASE_URL, если он задан (Render),
+# иначе собираем из компонентов (локальный docker-compose)
+if [ -z "${DATABASE_URL}" ]; then
+    export DATABASE_URL="postgresql://${POSTGRES_USER:-kotolek}:${POSTGRES_PASSWORD:-kotolek}@${DB_HOST:-db}:${DB_PORT:-5432}/${POSTGRES_DB:-kotolek}"
+fi
 
 echo "⏳ Ожидание готовности базы данных..."
 until python -c "import psycopg2, os; from urllib.parse import urlparse; u=urlparse(os.getenv('DATABASE_URL')); psycopg2.connect(host=u.hostname, port=u.port, user=u.username, password=u.password, dbname=u.path[1:]).close()" 2>/dev/null; do

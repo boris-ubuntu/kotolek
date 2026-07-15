@@ -22,6 +22,10 @@ ENV/
 .env
 .env.local
 .env.*.local
+backend/.env
+
+# Private data export (не коммитим личные финансовые данные)
+backend/kotolek_export.csv
 
 # IDE
 .vscode/

@@ -53,6 +53,6 @@ def health():
     return {"status": "ok", "version": "1.0.0"}
 
 if __name__ == "__main__":
-    print("🚀 Сервер запущен на http://0.0.0.0:8080")
-    print("📱 Открывайте на телефоне: http://192.168.1.127:8080")
-    uvicorn.run(app, host="0.0.0.0", port=8080)
+    port = int(os.getenv("PORT", "8080"))
+    print(f"🚀 Сервер запущен на http://0.0.0.0:{port}")
+    uvicorn.run(app, host="0.0.0.0", port=port)
