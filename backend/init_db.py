@@ -50,6 +50,7 @@ def init_categories(db):
 def init_users(db):
     users_data = [
         {"username": "boris", "password": "Maelstormer5"},
+        {"username": "test", "password": "test"},
     ]
     for u in users_data:
         exists = db.query(User).filter(User.username == u["username"]).first()
