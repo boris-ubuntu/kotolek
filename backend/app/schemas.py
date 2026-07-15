@@ -58,3 +58,23 @@ class CategoryExpense(BaseModel):
 class DailyBalance(BaseModel):
     date: str
     balance: float
+
+class LoginRequest(BaseModel):
+    username: str
+    password: str
+
+class Token(BaseModel):
+    access_token: str
+    token_type: str = "bearer"
+    username: str
+
+class UserOut(BaseModel):
+    id: int
+    username: str
+
+    class Config:
+        from_attributes = True
+
+class UserCreate(BaseModel):
+    username: str
+    password: str

@@ -1,10 +1,31 @@
 class API {
+    static TOKEN_KEY = 'kotolek_token';
+    static onUnauthorized = null;
+
+    static getToken() {
+        return localStorage.getItem(API.TOKEN_KEY) || '';
+    }
+
+    static setToken(token) {
+        if (token) {
+            localStorage.setItem(API.TOKEN_KEY, token);
+        } else {
+            localStorage.removeItem(API.TOKEN_KEY);
+        }
+    }
+
     static async request(endpoint, options = {}) {
         const url = '/api' + endpoint;
+        const headers = {
+            'Content-Type': 'application/json',
+            ...(options.headers || {}),
+        };
+        const token = API.getToken();
+        if (token) {
+            headers['Authorization'] = 'Bearer ' + token;
+        }
         const config = {
-            headers: {
-                'Content-Type': 'application/json',
-            },
+            headers,
             ...options,
         };
         if (options.body) {
@@ -12,6 +33,13 @@ class API {
         }
         try {
             const response = await fetch(url, config);
+            if (response.status === 401) {
+                API.setToken('');
+                if (typeof API.onUnauthorized === 'function') {
+                    API.onUnauthorized();
+                }
+                throw new Error('Требуется авторизация');
+            }
             if (!response.ok) {
                 let detail = 'Ошибка сервера';
                 try {
@@ -29,6 +57,25 @@ class API {
             console.error('API Error:', error);
             throw error;
         }
+    }
+
+    static async login(username, password) {
+        const res = await fetch('/api/auth/login', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ username, password }),
+        });
+        if (!res.ok) {
+            let detail = 'Неверный логин или пароль';
+            try {
+                const data = await res.json();
+                detail = data.detail || detail;
+            } catch (e) {}
+            throw new Error(detail);
+        }
+        const data = await res.json();
+        API.setToken(data.access_token);
+        return data;
     }
     static async getCategories() {
         return this.request('/categories/');

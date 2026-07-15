@@ -859,3 +859,85 @@ header h1 span
         font-size: 28px;
     }
 }
+
+/* Экран входа */
+.login-overlay
+{
+    position: fixed;
+    inset: 0;
+    background: linear-gradient(135deg, #1a202c 0%, #2d3748 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10000;
+    padding: 20px;
+}
+
+.login-card
+{
+    background: #fff;
+    border-radius: 20px;
+    padding: 32px 28px;
+    width: 100%;
+    max-width: 340px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    text-align: center;
+}
+
+.login-card h2
+{
+    margin: 0;
+    font-size: 28px;
+    color: #2d3748;
+}
+
+.login-sub
+{
+    margin: 0 0 8px;
+    color: #718096;
+    font-size: 14px;
+}
+
+.login-card input
+{
+    padding: 12px 14px;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    font-size: 16px;
+    outline: none;
+}
+
+.login-card input:focus
+{
+    border-color: #5390d9;
+    box-shadow: 0 0 0 3px rgba(83, 144, 217, 0.2);
+}
+
+.login-card button
+{
+    margin-top: 6px;
+    padding: 12px;
+    border: none;
+    border-radius: 12px;
+    background: #5390d9;
+    color: #fff;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.login-card button:hover
+{
+    background: #4361c9;
+}
+
+.login-error
+{
+    min-height: 18px;
+    color: #e53e3e;
+    font-size: 14px;
+    font-weight: 600;
+}

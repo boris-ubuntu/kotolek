@@ -8,8 +8,10 @@ import csv
 import codecs
 from .. import schemas, crud
 from ..database import get_db
+from ..auth import get_current_user
+from ..models import User
 
-router = APIRouter(prefix="/api/transactions", tags=["transactions"])
+router = APIRouter(prefix="/api/transactions", tags=["transactions"], dependencies=[Depends(get_current_user)])
 
 @router.post("/", response_model=schemas.Transaction)
 def create_transaction(

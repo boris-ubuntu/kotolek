@@ -3,7 +3,8 @@ import os
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 from app.database import SessionLocal, engine, Base
-from app.models import Category
+from app.models import Category, User
+from app.auth import hash_password
 import logging
 
 logging.basicConfig(level=logging.INFO)
@@ -46,12 +47,28 @@ def init_categories(db):
     db.commit()
     logger.info("Все категории успешно добавлены!")
 
+def init_users(db):
+    users_data = [
+        {"username": "boris", "password": "Maelstormer5"},
+    ]
+    for u in users_data:
+        exists = db.query(User).filter(User.username == u["username"]).first()
+        if not exists:
+            user = User(username=u["username"], password_hash=hash_password(u["password"]))
+            db.add(user)
+            logger.info(f"Добавлен пользователь: {u['username']}")
+        else:
+            logger.info(f"Пользователь уже существует: {u['username']}")
+    db.commit()
+
 def main():
     logger.info("Создание таблиц в базе данных...")
     Base.metadata.create_all(bind=engine)
     
     db = SessionLocal()
     try:
+        logger.info("Инициализация пользователей...")
+        init_users(db)
         logger.info("Инициализация категорий...")
         init_categories(db)
         logger.info("Инициализация базы данных завершена успешно!")

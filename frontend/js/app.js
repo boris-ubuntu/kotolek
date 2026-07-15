@@ -12,10 +12,22 @@ class App {
         this.refreshAll();
         window.addEventListener('transaction-added', () => this.refreshAll());
         setInterval(() => this.refreshAll(), 30000);
-        
+
         this.initExportImport();
         this.initTopExpenseClick();
         this.initInfoModal();
+    }
+
+    static showApp() {
+        document.getElementById('login-overlay').classList.add('hidden');
+        document.getElementById('app').classList.remove('hidden');
+    }
+
+    static showLogin(message) {
+        document.getElementById('app').classList.add('hidden');
+        document.getElementById('login-overlay').classList.remove('hidden');
+        const err = document.getElementById('login-error');
+        if (err) err.textContent = message || '';
     }
 
     initTopExpenseClick() {
@@ -112,5 +124,30 @@ class App {
     }
 }
 document.addEventListener('DOMContentLoaded', function() {
-    window.app = new App();
+    API.onUnauthorized = () => App.showLogin('Сессия истекла. Войдите снова.');
+    const loginForm = document.getElementById('login-form');
+    if (loginForm) {
+        loginForm.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const username = document.getElementById('login-username').value.trim();
+            const password = document.getElementById('login-password').value;
+            const err = document.getElementById('login-error');
+            err.textContent = '⏳ Проверка...';
+            try {
+                await API.login(username, password);
+                err.textContent = '';
+                App.showApp();
+                window.app = new App();
+            } catch (e2) {
+                err.textContent = '❌ ' + e2.message;
+            }
+        });
+    }
+    if (API.getToken()) {
+        // Есть сохранённый токен — пробуем сразу открыть приложение
+        App.showApp();
+        window.app = new App();
+    } else {
+        App.showLogin();
+    }
 });

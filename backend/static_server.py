@@ -17,6 +17,7 @@ import uvicorn
 
 from app.routers.categories import router as categories_router
 from app.routers.transactions import router as transactions_router
+from app.routers.auth import router as auth_router
 from app.database import engine, Base
 
 try:
@@ -66,6 +67,7 @@ async def preflight_handler():
 
 app.include_router(categories_router)
 app.include_router(transactions_router)
+app.include_router(auth_router)
 
 @app.get("/api/test")
 def test():
