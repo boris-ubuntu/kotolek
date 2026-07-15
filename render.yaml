@@ -16,5 +16,3 @@ services:
         fromDatabase:
           name: kotolek-db
           property: connectionString
-      - key: PORT
-        value: "8080"
