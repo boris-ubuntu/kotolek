@@ -3,7 +3,12 @@
 # Используем готовый DATABASE_URL, если он задан (Render),
 # иначе собираем из компонентов (локальный docker-compose)
 if [ -z "${DATABASE_URL}" ]; then
-    export DATABASE_URL="postgresql://${POSTGRES_USER:-kotolek}:${POSTGRES_PASSWORD:-kotolek}@${DB_HOST:-db}:${DB_PORT:-5432}/${POSTGRES_DB:-kotolek}"
+    if [ -z "${DB_HOST}" ]; then
+        echo "❌ DATABASE_URL не задан. На Render подключите PostgreSQL к сервису (Blueprint) "
+        echo "   или задайте переменную окружения DATABASE_URL = Internal Connection String вашей БД."
+        exit 1
+    fi
+    export DATABASE_URL="postgresql://${POSTGRES_USER:-kotolek}:${POSTGRES_PASSWORD:-kotolek}@${DB_HOST}:${DB_PORT:-5432}/${POSTGRES_DB:-kotolek}"
 fi
 
 # Запускаем веб-сервер сразу в фоне, чтобы Render сразу увидел открытый порт
