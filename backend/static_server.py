@@ -12,7 +12,10 @@ from app.routers.categories import router as categories_router
 from app.routers.transactions import router as transactions_router
 from app.database import engine, Base
 
-Base.metadata.create_all(bind=engine)
+try:
+    Base.metadata.create_all(bind=engine)
+except Exception as e:
+    print("⚠️ Таблицы ещё не созданы (БД возможно не готова), продолжим после init_db:", e)
 
 app = FastAPI()
 
