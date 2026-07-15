@@ -5,8 +5,22 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Котолёк - Семейный бюджет</title>
     <link rel="icon" type="image/svg+xml" href="/favicon.svg">
-    <link rel="stylesheet" href="css/style.css?v=7">
+    <link rel="manifest" href="/manifest.webmanifest">
+    <meta name="theme-color" content="#282832">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Котолёк">
+    <link rel="apple-touch-icon" href="/icon-192.png">
+    <link rel="stylesheet" href="css/style.css?v=8">
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/sw.js').catch(() => {});
+            });
+        }
+    </script>
 </head>
 <body>
     <div id="login-overlay" class="login-overlay">

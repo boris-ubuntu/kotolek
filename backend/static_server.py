@@ -1,6 +1,13 @@
 import sys
 import os
+import mimetypes
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+
+# Корректные MIME-типы для PWA (иначе Android отвергает манифест)
+mimetypes.add_type("application/manifest+json", ".webmanifest")
+mimetypes.add_type("application/manifest+json", ".manifest")
+mimetypes.add_type("image/png", ".png")
+mimetypes.add_type("image/svg+xml", ".svg")
 
 from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
