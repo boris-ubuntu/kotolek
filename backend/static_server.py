@@ -6,6 +6,13 @@ from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
+from fastapi.exception_handlers import (
+    http_exception_handler,
+    request_validation_exception_handler,
+)
+from fastapi.exceptions import RequestValidationError
+from starlette.exceptions import HTTPException as StarletteHTTPException
+import traceback
 import uvicorn
 
 from app.routers.categories import router as categories_router
@@ -26,6 +33,23 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+@app.exception_handler(StarletteHTTPException)
+async def custom_http_exception_handler(request, exc):
+    return await http_exception_handler(request, exc)
+
+@app.exception_handler(RequestValidationError)
+async def custom_validation_exception_handler(request, exc):
+    return await request_validation_exception_handler(request, exc)
+
+@app.exception_handler(Exception)
+async def unhandled_exception_handler(request, exc):
+    # Пишем полный стек в stdout (его видно в логах Render)
+    traceback.print_exc()
+    return JSONResponse(
+        status_code=500,
+        content={"detail": f"Internal Server Error: {type(exc).__name__}: {exc}"},
+    )
 
 @app.options("/{rest_of_path:path}")
 async def preflight_handler():

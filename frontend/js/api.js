@@ -13,8 +13,16 @@ class API {
         try {
             const response = await fetch(url, config);
             if (!response.ok) {
-                const error = await response.json();
-                throw new Error(error.detail || 'Ошибка сервера');
+                let detail = 'Ошибка сервера';
+                try {
+                    const data = await response.json();
+                    detail = data.detail || JSON.stringify(data);
+                } catch (e) {
+                    // Тело ответа не JSON (например, HTML-страница ошибки) — берём текст
+                    const text = await response.text();
+                    detail = text ? text.slice(0, 200) : `HTTP ${response.status}`;
+                }
+                throw new Error(detail);
             }
             return await response.json();
         } catch (error) {
