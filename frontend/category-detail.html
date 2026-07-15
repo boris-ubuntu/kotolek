@@ -6,6 +6,7 @@
     <title>Котолёк - Категория</title>
     <link rel="icon" type="image/svg+xml" href="/favicon.svg">
     <link rel="stylesheet" href="css/style.css">
+    <script src="js/api.js"></script>
     <style>
         /* Кнопка «Назад» сверху слева */
         .back-btn {
@@ -165,9 +166,7 @@
             document.getElementById('cat-title').textContent = group + ' · ' + monthNames[month - 1] + ' ' + year;
 
             try {
-                const response = await fetch('/api/transactions/by-month?year=' + year + '&month=' + month);
-                if (!response.ok) throw new Error('Ошибка загрузки');
-                const transactions = await response.json();
+                const transactions = await API.request('/transactions/by-month?year=' + year + '&month=' + month);
                 const filtered = transactions.filter(function(txn) {
                     return !txn.is_income && getCategoryGroup(txn.category_name) === group;
                 });
@@ -244,11 +243,7 @@
             async confirm() {
                 if (!this.transactionId) return;
                 try {
-                    const response = await fetch('/api/transactions/' + this.transactionId, { method: 'DELETE' });
-                    if (!response.ok) {
-                        const error = await response.json();
-                        throw new Error(error.detail || 'Ошибка удаления');
-                    }
+                    await API.request('/transactions/' + this.transactionId, { method: 'DELETE' });
                     alert('✅ Операция удалена');
                     this.close();
                     loadCategoryDetails(currentYear, currentMonth, currentGroup);
@@ -259,6 +254,7 @@
         }
 
         document.addEventListener('DOMContentLoaded', function() {
+            API.onUnauthorized = () => { window.location.href = '/index.html'; };
             deleteModal = new DeleteModal();
 
             document.getElementById('back-btn').addEventListener('click', function() {
