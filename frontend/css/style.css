@@ -5,6 +5,11 @@
     box-sizing: border-box;
 }
 
+.hidden
+{
+    display: none !important;
+}
+
 body
 {
     font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, Oxygen, Ubuntu, sans-serif;
