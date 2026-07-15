@@ -1,6 +1,6 @@
 // Service Worker для Котолёк — кеширует оболочку приложения,
 // чтобы открывалось мгновенно и работало офлайн (как нативное приложение).
-const CACHE = 'kotolek-v1';
+const CACHE = 'kotolek-v2';
 const SHELL = [
   '/',
   '/index.html',
@@ -51,17 +51,15 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  // Статика приложения — cache-first, фоновое обновление
+  // Статика приложения — network-first: сначала пробуем сеть (чтобы
+  // новые деплои применялись сразу), при сбое отдаём кеш (офлайн).
   event.respondWith(
-    caches.match(req).then((cached) => {
-      const network = fetch(req).then((res) => {
-        if (res && res.status === 200) {
-          const copy = res.clone();
-          caches.open(CACHE).then((cache) => cache.put(req, copy));
-        }
-        return res;
-      }).catch(() => cached);
-      return cached || network;
-    })
+    fetch(req).then((res) => {
+      if (res && res.status === 200) {
+        const copy = res.clone();
+        caches.open(CACHE).then((cache) => cache.put(req, copy));
+      }
+      return res;
+    }).catch(() => caches.match(req))
   );
 });
