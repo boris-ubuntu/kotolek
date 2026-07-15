@@ -67,10 +67,6 @@ async def preflight_handler():
 app.include_router(categories_router)
 app.include_router(transactions_router)
 
-frontend_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), "frontend")
-if os.path.exists(frontend_path):
-    app.mount("/", StaticFiles(directory=frontend_path, html=True), name="frontend")
-
 @app.get("/api/test")
 def test():
     return {"message": "API работает!"}
@@ -78,6 +74,10 @@ def test():
 @app.get("/health")
 def health():
     return {"status": "ok", "version": "1.0.0"}
+
+frontend_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), "frontend")
+if os.path.exists(frontend_path):
+    app.mount("/", StaticFiles(directory=frontend_path, html=True), name="frontend")
 
 if __name__ == "__main__":
     port = int(os.getenv("PORT", "8080"))
