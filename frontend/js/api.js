@@ -21,9 +21,12 @@ class API {
     static async request(endpoint, options = {}) {
         const url = '/api' + endpoint;
         const headers = {
-            'Content-Type': 'application/json',
             ...(options.headers || {}),
         };
+        // Content-Type only for requests with body (POST/PUT)
+        if (options.body && !(options.body instanceof FormData)) {
+            headers['Content-Type'] = 'application/json';
+        }
         const token = API.getToken();
         if (token) {
             headers['Authorization'] = 'Bearer ' + token;

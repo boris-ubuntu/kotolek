@@ -39,11 +39,15 @@ self.addEventListener('activate', (event) => {
 
 self.addEventListener('fetch', (event) => {
   const req = event.request;
-  if (req.method !== 'GET') return;
-
   const url = new URL(req.url);
 
-  // API — всегда пробуем сеть, при ошибке отдаём кеш (если есть)
+  // Non-GET (POST, DELETE, PUT, etc.) — только сеть, без кеша
+  if (req.method !== 'GET') {
+    event.respondWith(fetch(req));
+    return;
+  }
+
+  // API GET — всегда пробуем сеть, при ошибке отдаём кеш (если есть)
   if (url.pathname.startsWith('/api/')) {
     event.respondWith(
       fetch(req).catch(() => caches.match(req))
