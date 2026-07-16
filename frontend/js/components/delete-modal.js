@@ -31,13 +31,9 @@ class DeleteModal {
         }
         try {
             console.log('Deleting transaction id:', this.transactionId);
-            const response = await fetch('/api/transactions/' + this.transactionId, {
+            await API.request('/transactions/' + this.transactionId, {
                 method: 'DELETE',
             });
-            if (!response.ok) {
-                const error = await response.json();
-                throw new Error(error.detail || 'Ошибка удаления');
-            }
             this.close();
             window.dispatchEvent(new Event('transaction-added'));
         } catch (error) {

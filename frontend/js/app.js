@@ -72,9 +72,29 @@ class App {
     }
     
     initExportImport() {
-        // Экспорт
-        document.getElementById('export-btn').addEventListener('click', function() {
-            window.location.href = '/api/transactions/export';
+        // Экспорт (с токеном, иначе 401)
+        document.getElementById('export-btn').addEventListener('click', async function() {
+            try {
+                const token = API.getToken();
+                const headers = {};
+                if (token) headers['Authorization'] = 'Bearer ' + token;
+                const res = await fetch('/api/transactions/export', { headers });
+                if (!res.ok) {
+                    const err = await res.json().catch(() => ({}));
+                    throw new Error(err.detail || 'Ошибка экспорта');
+                }
+                const blob = await res.blob();
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'kotolek_export.csv';
+                document.body.appendChild(a);
+                a.click();
+                a.remove();
+                URL.revokeObjectURL(url);
+            } catch (error) {
+                alert('❌ ' + error.message);
+            }
         });
         
         // Импорт - сразу загружаем файл
@@ -91,7 +111,7 @@ class App {
             document.body.appendChild(importStatus);
             
             try {
-                const response = await fetch('/api/transactions/import', {
+                const response = await API.request('/transactions/import', {
                     method: 'POST',
                     body: formData
                 });
