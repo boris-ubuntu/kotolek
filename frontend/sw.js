@@ -1,6 +1,6 @@
 // Service Worker для Котолёк — кеширует оболочку приложения,
 // чтобы открывалось мгновенно и работало офлайн (как нативное приложение).
-const CACHE = 'kotolek-v2';
+const CACHE = 'kotolek-v3';
 const SHELL = [
   '/',
   '/index.html',

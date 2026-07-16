@@ -29,10 +29,10 @@ class API {
             headers['Authorization'] = 'Bearer ' + token;
         }
         const config = {
-            headers,
             ...options,
+            headers,
         };
-        if (options.body) {
+        if (options.body && !(options.body instanceof FormData)) {
             config.body = JSON.stringify(options.body);
         }
         try {
