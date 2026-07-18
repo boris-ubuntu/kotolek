@@ -19,6 +19,12 @@ class Config:
         DATABASE_URL = f"postgresql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
 
     DEBUG = os.getenv("DEBUG", "False").lower() == "true"
-    SECRET_KEY = os.getenv("SECRET_KEY")
-    if not SECRET_KEY:
-        raise ValueError("SECRET_KEY must be set in environment variables")
+    _secret_key = os.getenv("SECRET_KEY", "build-time-secret-key-change-in-production")
+    
+    @property
+    def SECRET_KEY(self):
+        # В продакшене SECRET_KEY должен быть установлен через переменную окружения
+        # build-time-secret-key используется только для сборки Docker-образа
+        if self._secret_key == "build-time-secret-key-change-in-production":
+            raise ValueError("SECRET_KEY must be set in environment variables")
+        return self._secret_key

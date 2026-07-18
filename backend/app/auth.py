@@ -13,7 +13,8 @@ from .config import Config
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 # JWT Configuration
-SECRET_KEY = Config.SECRET_KEY
+_config = Config()
+SECRET_KEY = _config.SECRET_KEY
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 30
 REFRESH_TOKEN_EXPIRE_DAYS = 7
