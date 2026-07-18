@@ -65,8 +65,10 @@ class LoginRequest(BaseModel):
 
 class Token(BaseModel):
     access_token: str
+    refresh_token: str
     token_type: str = "bearer"
     username: str
+    expires_in: int  # seconds
 
 class UserOut(BaseModel):
     id: int
@@ -78,3 +80,7 @@ class UserOut(BaseModel):
 class UserCreate(BaseModel):
     username: str
     password: str
+
+
+class RefreshTokenRequest(BaseModel):
+    refresh_token: str

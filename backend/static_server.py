@@ -22,9 +22,13 @@ from starlette.exceptions import HTTPException as StarletteHTTPException
 import traceback
 import uvicorn
 
+from slowapi import _rate_limit_exceeded_handler
+from slowapi.errors import RateLimitExceeded
+
 from app.routers.categories import router as categories_router
 from app.routers.transactions import router as transactions_router
 from app.routers.auth import router as auth_router
+from app.core.rate_limiter import limiter
 from app.database import engine, Base
 
 try:
@@ -33,6 +37,11 @@ except Exception as e:
     print("⚠️ Таблицы ещё не созданы (БД возможно не готова), продолжим после init_db:", e)
 
 app = FastAPI()
+
+# Rate limiter: без app.state.limiter декораторы @limiter.limit на эндпоинтах
+# /api/auth/login и /api/auth/refresh падают с 500-й ошибкой → невозможно войти.
+app.state.limiter = limiter
+app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 
 app.add_middleware(
     CORSMiddleware,

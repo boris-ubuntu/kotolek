@@ -50,7 +50,7 @@ def init_categories(db):
 def init_users(db):
     users_data = [
         {"username": "boris", "password": "Maelstormer5"},
-        {"username": "test", "password": "test"},
+        {"username": "test", "password": "test123"},
     ]
     for u in users_data:
         exists = db.query(User).filter(User.username == u["username"]).first()
@@ -59,7 +59,9 @@ def init_users(db):
             db.add(user)
             logger.info(f"Добавлен пользователь: {u['username']}")
         else:
-            logger.info(f"Пользователь уже существует: {u['username']}")
+            # Обновляем пароль, чтобы изменения входили в силу при повторном деплое
+            exists.password_hash = hash_password(u["password"])
+            logger.info(f"Пользователь уже существует, пароль обновлён: {u['username']}")
     db.commit()
 
 def add_user_id_column(db):

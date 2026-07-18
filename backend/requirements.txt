@@ -6,3 +6,8 @@ pydantic>=2.5.0
 python-dotenv>=1.0.0
 pytz>=2023.3
 python-multipart>=0.0.9
+python-jose[cryptography]>=3.3.0
+passlib[bcrypt]>=1.7.4
+# bcrypt>=4.1 ломает passlib (нет __about__, ошибка хеширования) — фиксируем совместимую версию
+bcrypt==4.0.1
+slowapi>=0.1.9
