@@ -56,14 +56,15 @@ def _validate_category_exists(db: Session, category_id: int):
         )
 
 
-def transaction_exists(db: Session, amount, category_id, is_income, date, description, user_id):
+def transaction_exists(db: Session, amount, category_id, is_income, date_from, date_to, description, user_id):
     """Проверяет, есть ли уже такая транзакция (по сигнатуре) — борьба с дублями (в рамках пользователя)."""
     query = db.query(models.Transaction).filter(
         models.Transaction.user_id == user_id,
         models.Transaction.amount == amount,
         models.Transaction.category_id == category_id,
         models.Transaction.is_income == is_income,
-        models.Transaction.date == date,
+        models.Transaction.date >= date_from,
+        models.Transaction.date < date_to,
     )
     if description:
         query = query.filter(models.Transaction.description == description)
@@ -94,7 +95,6 @@ def dedupe_transactions(db: Session, user_id: int = None):
 def create_transaction(db: Session, transaction: schemas.TransactionCreate, user_id: int, skip_duplicates: bool = False):
     if skip_duplicates:
         effective_date = transaction.date or datetime.now()
-        # Compare by day (normalized to start of day)
         day_start = effective_date.replace(hour=0, minute=0, second=0, microsecond=0)
         day_end = effective_date.replace(hour=23, minute=59, second=59, microsecond=999999)
         if transaction_exists(
