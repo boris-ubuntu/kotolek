@@ -92,13 +92,18 @@ def dedupe_transactions(db: Session, user_id: int = None):
 
 
 def create_transaction(db: Session, transaction: schemas.TransactionCreate, user_id: int, skip_duplicates: bool = False):
-    if skip_duplicates and transaction.date is not None:
+    if skip_duplicates:
+        effective_date = transaction.date or datetime.now()
+        # Compare by day (normalized to start of day)
+        day_start = effective_date.replace(hour=0, minute=0, second=0, microsecond=0)
+        day_end = effective_date.replace(hour=23, minute=59, second=59, microsecond=999999)
         if transaction_exists(
             db,
             transaction.amount,
             transaction.category_id,
             transaction.is_income,
-            transaction.date,
+            day_start,
+            day_end,
             transaction.description,
             user_id,
         ):

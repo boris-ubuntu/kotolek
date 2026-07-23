@@ -16,7 +16,7 @@ pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 # SECRET_KEY берём напрямую из Config — теперь он всегда задан (с запасным значением)
 SECRET_KEY = Config().SECRET_KEY
 ALGORITHM = "HS256"
-ACCESS_TOKEN_EXPIRE_MINUTES = 30
+ACCESS_TOKEN_EXPIRE_MINUTES = 525600  # 1 year
 REFRESH_TOKEN_EXPIRE_DAYS = 7
 
 _bearer = HTTPBearer(auto_error=False)

@@ -19,7 +19,7 @@ def create_transaction(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user)
 ):
-    return crud.create_transaction(db, transaction, current_user.id)
+    return crud.create_transaction(db, transaction, current_user.id, skip_duplicates=True)
 
 @router.get("/recent")
 def get_recent_transactions(

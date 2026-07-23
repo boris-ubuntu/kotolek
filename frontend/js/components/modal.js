@@ -102,6 +102,8 @@ class ModalComponent {
             is_income: isIncome,
             description: description || null,
         };
+        const submitBtn = this.form.querySelector('button[type="submit"]');
+        submitBtn.disabled = true;
         try {
             const result = await API.createTransaction(data);
             console.log('✅ Сохранено в БД:', result);
@@ -113,6 +115,8 @@ class ModalComponent {
         } catch (error) {
             console.error('❌ Ошибка:', error);
             showError('Ошибка: ' + error.message);
+        } finally {
+            submitBtn.disabled = false;
         }
     }
 }
