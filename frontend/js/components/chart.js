@@ -81,16 +81,7 @@ class ChartComponent {
                     legend: {
                         display: false,
                     },
-                    tooltip: {
-                        bodyFont: { family: 'Segoe UI, Tahoma, sans-serif', size: 13 },
-                        callbacks: {
-                            label: function(context) {
-                                const total = context.dataset.data.reduce((a, b) => a + b, 0);
-                                const pct = ((context.raw / total) * 100).toFixed(1);
-                                return ' ' + context.label + ': ' + formatCurrency(context.raw) + ' (' + pct + '%)';
-                            }
-                        }
-                    }
+                    tooltip: { enabled: false }
                 },
                 onClick: (event, elements) => {
                     if (!elements || elements.length === 0) return;

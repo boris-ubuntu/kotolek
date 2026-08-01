@@ -93,22 +93,7 @@ class HistogramComponent {
                         legend: {
                             display: false,
                         },
-                        tooltip: {
-                            backgroundColor: 'rgba(40,40,50,0.95)',
-                            titleColor: '#e2e8f0',
-                            bodyColor: '#e2e8f0',
-                            bodyFont: { family: 'Segoe UI, Tahoma, sans-serif', weight: 'bold', size: 14 },
-                            borderColor: '#3a3a47',
-                            borderWidth: 1,
-                            cornerRadius: 12,
-                            padding: 12,
-                            displayColors: false,
-                            callbacks: {
-                                label: function(context) {
-                                    return 'Расходы: ' + formatCurrency(context.parsed.y);
-                                }
-                            }
-                        }
+                        tooltip: { enabled: false }
                     },
                     scales: {
                         x: {

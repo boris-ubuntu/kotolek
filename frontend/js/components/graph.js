@@ -24,33 +24,19 @@ class GraphComponent {
             return;
         }
 
-        // Собираем баланс по датам (уже кумулятивный из API)
-        const byDate = {};
-        rawData.forEach(function(item) {
-            byDate[item.date] = item.balance;
-        });
-
-        // Шкала — весь календарный месяц (все дни 1..lastDay), чтобы столбцы
-        // были тонкими и стабильными. Будущие дни оставляем ПУСТЫМИ (null),
-        // прошедшие без операций — последнее известное значение (carry-forward).
-        const now = new Date();
-        const year = now.getFullYear();
-        const month = now.getMonth();
-        const today = now.getDate();
-        const lastDay = new Date(year, month + 1, 0).getDate();
-
+        // Данные уже приходят за 31 день из API с кумулятивным балансом
         const labels = [];
         const values = [];
         let lastKnown = 0;
-        for (let d = 1; d <= lastDay; d++) {
-            const key = year + '-' + String(month + 1).padStart(2, '0') + '-' + String(d).padStart(2, '0');
-            if (Object.prototype.hasOwnProperty.call(byDate, key)) {
-                lastKnown = byDate[key];
+
+        rawData.forEach(function(item) {
+            const dayNum = new Date(item.date + 'T00:00:00').getDate();
+            labels.push(String(dayNum));
+            if (item.balance !== null && item.balance !== undefined) {
+                lastKnown = item.balance;
             }
-            labels.push(String(d));
-            // Будущие дни — пустые столбцы (null), они появятся сами по мере наступления дня
-            values.push(d > today ? null : lastKnown);
-        }
+            values.push(lastKnown);
+        });
 
         // Цвет столбца: синий для положительного баланса, красный для отрицательного
         const BLUE = '#00aff5';
@@ -87,21 +73,7 @@ class GraphComponent {
                     },
                     plugins: {
                         legend: { display: false },
-                        tooltip: {
-                            backgroundColor: 'rgba(40,40,50,0.95)',
-                            titleColor: '#e2e8f0',
-                            bodyColor: '#e2e8f0',
-                            bodyFont: { weight: 'bold', size: 14 },
-                            borderColor: '#3a3a47',
-                            borderWidth: 1,
-                            cornerRadius: 12,
-                            padding: 12,
-                            callbacks: {
-                                label: function(context) {
-                                    return 'Баланс: ' + formatCurrency(context.parsed.y);
-                                }
-                            }
-                        }
+                        tooltip: { enabled: false }
                     },
                     scales: {
                         x: {

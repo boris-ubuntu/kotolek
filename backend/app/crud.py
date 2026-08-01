@@ -176,37 +176,39 @@ def get_transactions_by_month(db: Session, user_id: int, year: int, month: int):
 def get_balance(db: Session, user_id: int):
     now = datetime.now()
     start_date = datetime(now.year, now.month, 1)
-    
-    stats = db.query(
-        func.coalesce(
-            func.sum(models.Transaction.amount).filter(
-                and_(
-                    models.Transaction.user_id == user_id,
-                    models.Transaction.is_income == True,
-                    models.Transaction.date >= start_date,
-                )
-            ),
-            0.0,
-        ).label("month_income"),
-        func.coalesce(
-            func.sum(models.Transaction.amount).filter(
-                and_(
-                    models.Transaction.user_id == user_id,
-                    models.Transaction.is_income == False,
-                    models.Transaction.date >= start_date,
-                )
-            ),
-            0.0,
-        ).label("month_expenses"),
-    ).first()
 
-    month_income = float(stats.month_income)
-    month_expenses = float(stats.month_expenses)
+    # Общий баланс за всё время (для "Семейного счёта")
+    total = db.query(
+        func.coalesce(func.sum(
+            func.case(
+                (models.Transaction.is_income == True, models.Transaction.amount),
+                else_=0,
+            )
+        ), 0.0),
+        func.coalesce(func.sum(
+            func.case(
+                (models.Transaction.is_income == False, models.Transaction.amount),
+                else_=0,
+            )
+        ), 0.0),
+    ).filter(models.Transaction.user_id == user_id).first()
+
+    total_income = float(total[0])
+    total_expenses = float(total[1])
+
+    # Доход за текущий месяц
+    month_income = float(
+        db.query(func.coalesce(func.sum(models.Transaction.amount), 0.0))
+        .filter(
+            models.Transaction.user_id == user_id,
+            models.Transaction.is_income == True,
+            models.Transaction.date >= start_date,
+        ).scalar()
+    )
 
     return {
-        "balance": round(month_income - month_expenses, 2),
+        "balance": round(total_income - total_expenses, 2),
         "month_income": month_income,
-        "month_expenses": month_expenses,
     }
 
 def get_expenses_by_category(db: Session, user_id: int):
@@ -241,44 +243,52 @@ def get_expenses_by_category(db: Session, user_id: int):
 
 def get_daily_balance(db: Session, user_id: int):
     now = datetime.now()
-    start_date = datetime(now.year, now.month, 1)
-    end_date = now
-    
+    today = now.replace(hour=23, minute=59, second=59)
+    start_date = today - timedelta(days=30)  # 31 день включая сегодня
+    start_of_day = start_date.replace(hour=0, minute=0, second=0, microsecond=0)
+
+    # Транзакции за окно 31 дня
     transactions = db.query(
         models.Transaction.date,
         models.Transaction.amount,
-        models.Transaction.is_income
+        models.Transaction.is_income,
     ).filter(
         models.Transaction.user_id == user_id,
-        models.Transaction.date >= start_date,
-        models.Transaction.date <= end_date
-    ).order_by(
-        models.Transaction.date.asc()
-    ).all()
-    
+        models.Transaction.date >= start_of_day,
+        models.Transaction.date <= today,
+    ).order_by(models.Transaction.date.asc()).all()
+
+    # Начальный баланс = всё что было ДО окна
+    initial = db.query(
+        func.coalesce(func.sum(
+            func.case((models.Transaction.is_income == True, models.Transaction.amount), else_=0)
+        ), 0.0),
+        func.coalesce(func.sum(
+            func.case((models.Transaction.is_income == False, models.Transaction.amount), else_=0)
+        ), 0.0),
+    ).filter(
+        models.Transaction.user_id == user_id,
+        models.Transaction.date < start_of_day,
+    ).first()
+    cumulative = float(initial[0]) - float(initial[1])
+
+    # Дневные изменения
     daily = {}
     for t in transactions:
         date_key = t.date.strftime("%Y-%m-%d")
         if date_key not in daily:
             daily[date_key] = 0
-        if t.is_income:
-            daily[date_key] += t.amount
-        else:
-            daily[date_key] -= t.amount
-    
+        daily[date_key] += t.amount if t.is_income else -t.amount
+
+    # Генерируем 31 день
     result = []
-    cumulative = 0
-    current = start_date
-    
-    while current <= end_date:
+    current = start_of_day
+    while current <= today:
         date_key = current.strftime("%Y-%m-%d")
         cumulative += daily.get(date_key, 0)
-        result.append({
-            "date": date_key,
-            "balance": cumulative
-        })
+        result.append({"date": date_key, "balance": round(cumulative, 2)})
         current += timedelta(days=1)
-    
+
     return result
 
 def get_month_summary(db: Session, user_id: int):
