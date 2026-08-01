@@ -1,5 +1,5 @@
 from sqlalchemy.orm import Session
-from sqlalchemy import func, and_
+from sqlalchemy import func, and_, case
 from datetime import datetime, timedelta
 import calendar
 from . import models, schemas
@@ -180,13 +180,13 @@ def get_balance(db: Session, user_id: int):
     # Общий баланс за всё время (для "Семейного счёта")
     total = db.query(
         func.coalesce(func.sum(
-            func.case(
+            case(
                 (models.Transaction.is_income == True, models.Transaction.amount),
                 else_=0,
             )
         ), 0.0),
         func.coalesce(func.sum(
-            func.case(
+            case(
                 (models.Transaction.is_income == False, models.Transaction.amount),
                 else_=0,
             )
@@ -261,10 +261,10 @@ def get_daily_balance(db: Session, user_id: int):
     # Начальный баланс = всё что было ДО окна
     initial = db.query(
         func.coalesce(func.sum(
-            func.case((models.Transaction.is_income == True, models.Transaction.amount), else_=0)
+            case((models.Transaction.is_income == True, models.Transaction.amount), else_=0)
         ), 0.0),
         func.coalesce(func.sum(
-            func.case((models.Transaction.is_income == False, models.Transaction.amount), else_=0)
+            case((models.Transaction.is_income == False, models.Transaction.amount), else_=0)
         ), 0.0),
     ).filter(
         models.Transaction.user_id == user_id,
